@@ -1,0 +1,9 @@
+name: np-predictor
+channels:
+  - conda-forge
+dependencies:
+  - numpy
+  - pandas
+  - scipy
+  - matplotlib
+  - pytorch
