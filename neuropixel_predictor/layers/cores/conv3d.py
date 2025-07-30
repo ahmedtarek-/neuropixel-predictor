@@ -5,9 +5,9 @@ from collections import OrderedDict
 import torch
 from torch import nn
 
-from neuralpredictors import regularizers
-from neuralpredictors.layers.activations import AdaptiveELU
-from neuralpredictors.utils import check_hyperparam_for_layers
+from neuropixel_predictor import regularizers
+from neuropixel_predictor.layers.activations import AdaptiveELU
+from neuropixel_predictor.utils import check_hyperparam_for_layers
 
 from ...regularizers import DepthLaplaceL21d
 from ..affine import Bias3DLayer, Scale3DLayer
@@ -285,7 +285,7 @@ class Factorized3dCore(Core3d, nn.Module):
                 the kernel size (recommended). Setting Padding to 0 is not recommended and leads to artefacts,
                 zero is the default however to recreate backwards compatibility.
         :param input_regularizer: specifies what kind of spatial regularized is applied. Must match one of the
-                                  regularizers in neuralpredictors.regularizers
+                                  regularizers in neuropixel_predictor.regularizers
         :param cuda:
         """
         super().__init__()
@@ -430,4 +430,3 @@ class Factorized3dCore(Core3d, nn.Module):
             (temporal_kernel,) + spatial_kernel
             for temporal_kernel, spatial_kernel in zip(self.temporal_hidden_kernel, self.spatial_hidden_kernel)
         ]
-
