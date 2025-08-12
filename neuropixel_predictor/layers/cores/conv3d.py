@@ -129,7 +129,7 @@ class Basic3dCore(Core3d, nn.Module):
             else:
                 self.hidden_channels = []
 
-        self.hidden_channels = check_hyperparam_for_layers(hidden_channels, layers)
+        self.hidden_channels = check_hyperparam_for_layers(self.hidden_channels, layers)
         self.hidden_temporal_dilation = check_hyperparam_for_layers(hidden_temporal_dilation, layers)
         self.hidden_spatial_dilation = check_hyperparam_for_layers(hidden_spatial_dilation, layers)
 
@@ -169,12 +169,11 @@ class Basic3dCore(Core3d, nn.Module):
                 layer["nonlin"] = self.nonlinearities[hidden_nonlinearities]()
 
         self.features.add_module("layer0", nn.Sequential(layer))
-
         for l in range(0, self.layers - 1):
             layer = OrderedDict()
             layer[f"conv_{l + 1}"] = nn.Conv3d(
-                self.hidden_channels[l],
-                self.hidden_channels[l + 1],
+                in_channels=self.hidden_channels[l],
+                out_channels=self.hidden_channels[l + 1],
                 kernel_size=self.hidden_kernel[l],
                 dilation=(
                     self.hidden_temporal_dilation[l],
