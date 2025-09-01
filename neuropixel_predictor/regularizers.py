@@ -12,6 +12,15 @@ def laplace():
     """
     return np.array([[0, -1, 0], [-1, 4, -1], [0, -1, 0]]).astype(np.float32)[None, None, ...]
 
+def laplace5x5():
+    """
+    Returns a 5x5 LaplacianOfGaussians (LoG) filter.
+
+    """
+    return np.array([[0, 0, 1, 0, 0], [0, 1, 2, 1, 0], [1, 2, -16, 2, 1], [0, 1, 2, 1, 0], [0, 0, 1, 0, 0],]).astype(
+        np.float32
+    )[None, None, ...]
+
 def laplace1d():
     return np.array([-1, 4, -1]).astype(np.float32)[None, None, ...]
 
@@ -67,6 +76,49 @@ class Laplace1d(nn.Module):
 
     def forward(self, x):
         return F.conv1d(x, self.filter, bias=None, padding=self.padding_size)
+
+
+class LaplaceL2(nn.Module):
+    """
+    Laplace regularizer for a 2D convolutional layer. Unnormalized, not recommended to use.
+        Use LaplaceL2norm instead.
+
+        Args:
+            padding (int): Controls the amount of zero-padding for the convolution operation.
+
+        Attributes:
+            laplace (Laplace): Laplace convolution object. The output is the result of
+                convolving an input image with laplace filter.
+
+    """
+
+    def __init__(self, padding=None, filter_size=3):
+        super().__init__()
+        self.laplace = Laplace(padding=padding, filter_size=filter_size)
+        warnings.warn("LaplaceL2 Regularizer is deprecated. Use LaplaceL2norm instead.")
+
+    def forward(self, x, avg=True):
+        agg_fn = torch.mean if avg else torch.sum
+
+        oc, ic, k1, k2 = x.size()
+        return agg_fn(self.laplace(x.reshape(oc * ic, 1, k1, k2)).pow(2)) / 2
+
+
+class LaplaceL2norm(nn.Module):
+    """
+    Normalized Laplace regularizer for a 2D convolutional layer.
+        returns |laplace(filters)| / |filters|
+    """
+
+    def __init__(self, padding=None):
+        super().__init__()
+        self.laplace = Laplace(padding=padding)
+
+    def forward(self, x, avg=False):
+        agg_fn = torch.mean if avg else torch.sum
+
+        oc, ic, k1, k2 = x.size()
+        return agg_fn(self.laplace(x.reshape(oc * ic, 1, k1, k2)).pow(2)) / agg_fn(x.reshape(oc * ic, 1, k1, k2).pow(2))
 
 
 class Laplace3d(nn.Module):
