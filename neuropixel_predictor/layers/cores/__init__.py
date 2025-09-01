@@ -13,3 +13,7 @@ All core classes must have a `regularizer` and a `forward` method.
 from .conv3d import (
     Basic3dCore
 )
+
+from .conv2d import (
+    Stacked2dCore
+)
