@@ -2,6 +2,7 @@ name: np-predictor
 channels:
   - conda-forge
 dependencies:
+  - git
   - numpy
   - notebook
   - pandas
@@ -9,3 +10,4 @@ dependencies:
   - matplotlib
   - pytorch
   - torchvision
+  - datajoint
