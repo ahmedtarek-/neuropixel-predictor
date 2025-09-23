@@ -34,7 +34,7 @@ def simplified_trainer(
         losses: Dictionary of training and validation losses
     """
     # 1. Choose model
-    model.to(device)
+    model.to(torch.device(device))
     set_random_seed(seed)
 
     # 2. Define optimizer that will update the model weights
