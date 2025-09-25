@@ -7,7 +7,7 @@ import torch.nn as nn
 from tqdm import tqdm
 
 from ..utils import set_random_seed
-from .early_stopping import early_stopping
+from .early_stopping import EarlyStopping
 
 def simplified_trainer(
     model,
@@ -17,7 +17,8 @@ def simplified_trainer(
     device='cuda',
     max_epochs=100,
     patience=5,
-    lr=0.005
+    lr=0.005,
+    seed=42
 ):
     """
     A simple trainer loop for the network
@@ -35,6 +36,7 @@ def simplified_trainer(
         losses: Dictionary of training and validation losses
     """
     # 1. Choose model
+    model.loss_fn = loss_fn
     model.to(torch.device(device))
     set_random_seed(seed)
 
@@ -43,7 +45,7 @@ def simplified_trainer(
     # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=patience//2, factor=0.5, verbose=True) # Optional
     
     # 3. Define early_stopping method (essential to stop if learning isn't happening).
-    early_stopper = early_stopping(patience=patience, minimize=True)
+    early_stopping = EarlyStopping(patience=patience, maximize=False)
 
     # 4. Define history
     history = {'train_loss': [], 'val_loss': []}
@@ -68,7 +70,7 @@ def simplified_trainer(
             predictions = model(images)
             
             # 5.1.4 Calculate loss
-            loss = loss_fn(predictions, responses)
+            loss = model.loss_fn(predictions, responses)
             
             # 5.1.5 Add regularization
             if hasattr(model, 'regularizer'):
@@ -105,7 +107,7 @@ def simplified_trainer(
 
         # --- Early Stopping Check ---
         # Use val_loss for early stopping. For correlation, you would calculate that separately.
-        if early_stopper(epoch_val_loss):
+        if early_stopping(epoch_val_loss):
             print(f"Early stopping triggered after epoch {epoch+1}")
             break
 

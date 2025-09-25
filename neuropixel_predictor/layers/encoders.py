@@ -62,13 +62,13 @@ class GeneralizedEncoderBase(Encoder):
         x = torch.stack(params)
 
 
-        assert len(self.nonlinearity_type_list) == len(x) == len(self.nonlinearity_config_list), (
-            "Number of non-linearities ({}), number of readout outputs ({}) and, if available, number of non-linearity configs must match. "
-            "If you do not wish to restrict a certain readout output with a non-linearity, assign the activation 'Identity' to it."
-        )
+        # assert len(self.nonlinearity_type_list) == len(x) == len(self.nonlinearity_config_list), (
+        #     "Number of non-linearities ({}), number of readout outputs ({}) and, if available, number of non-linearity configs must match. "
+        #     "If you do not wish to restrict a certain readout output with a non-linearity, assign the activation 'Identity' to it."
+        # )
 
-        output = []
-        for i, (nonlinearity, out) in enumerate(zip(self.nonlinearity_type_list, x)):
-            output.append(nonlinearity(out, **self.nonlinearity_config_list[i]))
+        # output = []
+        # for i, (nonlinearity, out) in enumerate(zip(self.nonlinearity_type_list, x)):
+        #     output.append(nonlinearity(out, **self.nonlinearity_config_list[i]))
 
-        return tuple(output)
+        return x
