@@ -6,6 +6,7 @@ import torch
 import torch.nn as nn
 from tqdm import tqdm
 
+from ..utils import set_random_seed
 from .early_stopping import early_stopping
 
 def simplified_trainer(
