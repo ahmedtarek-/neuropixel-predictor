@@ -12,7 +12,7 @@ def check_hyperparam_for_layers(hyperparameter, layers):
         return (hyperparameter,) * layers
 
 
-def set_random_seed(seed):
+def set_random_seed(seed, deterministic=True):
     random.seed(seed)
     np.random.seed(seed)
     if deterministic:

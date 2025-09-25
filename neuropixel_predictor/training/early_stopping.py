@@ -8,6 +8,46 @@ import torch
 logger = logging.getLogger(__name__)
 
 
+class EarlyStopping:
+    def __init__(self, patience=5, maximize=False):
+        """
+        Early stopping utility
+        Args:
+            patience (int): Number of epochs to wait for improvement before stopping
+            maximize (bool): If True, looks for maximum (e.g. accuracy, correlation),
+                             otherwise looks for minimum (e.g. loss)
+        """
+        self.patience = patience
+        self.maximize = maximize
+        self.best_score = None
+        self.counter = 0
+
+    def __call__(self, current_score):
+        """
+        Check if training should stop
+        Args:
+            current_score (float): Current validation metric (loss or accuracy)
+        Returns:
+            bool: True if training should stop, False otherwise
+        """
+        # Flip sign if minimizing
+        score = current_score if self.maximize else -current_score
+
+        if self.best_score is None:
+            self.best_score = score
+            return False
+
+        if score > self.best_score:
+            self.best_score = score
+            self.counter = 0
+        else:
+            self.counter += 1
+
+        if self.counter >= self.patience:
+            return True  # stop training
+        return False
+
+
 def copy_state(model):
     """
     Given PyTorch module `model`, makes a copy of the state onto CPU.
