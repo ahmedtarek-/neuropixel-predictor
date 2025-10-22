@@ -1,5 +1,7 @@
 import torch
 from torch import nn
+import torch.nn.functional as F
+
 
 class Encoder(nn.Module):
     """
@@ -21,7 +23,8 @@ class Encoder(nn.Module):
 class GeneralizedEncoderBase(Encoder):
     def __init__(
         self, core, readout,
-        nonlinearity_type_list=[]
+        nonlinearity_type_list=[],
+        elu=False
     ):
         """
         An Encoder that wraps the core and readout into one model. Can predict any distribution.
@@ -29,11 +32,13 @@ class GeneralizedEncoderBase(Encoder):
             core (nn.Module): Core model. Refer to neuralpredictors.layers.cores
             readout (nn.ModuleDict): MultiReadout model. Refer to neuralpredictors.layers.readouts
             nonlinearity_type_list (list of classes/functions): Non-linearity type to use.
+            elu (bool): Use ELU and offset by 1 if True.
         """
         super().__init__()
         self.core = core
         self.readout = readout
         self.nonlinearity_type_list = nonlinearity_type_list
+        self.elu = elu
 
 
     def forward(
@@ -61,12 +66,13 @@ class GeneralizedEncoderBase(Encoder):
             params.append(param[None, ...] if len(param.shape) == 1 else param)
         x = torch.stack(params)
 
+        if self.elu:
+            x = F.elu(x) + 1
 
         # assert len(self.nonlinearity_type_list) == len(x) == len(self.nonlinearity_config_list), (
         #     "Number of non-linearities ({}), number of readout outputs ({}) and, if available, number of non-linearity configs must match. "
         #     "If you do not wish to restrict a certain readout output with a non-linearity, assign the activation 'Identity' to it."
         # )
-
         # output = []
         # for i, (nonlinearity, out) in enumerate(zip(self.nonlinearity_type_list, x)):
         #     output.append(nonlinearity(out, **self.nonlinearity_config_list[i]))

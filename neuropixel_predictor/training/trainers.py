@@ -50,7 +50,6 @@ def simplified_trainer(
     # 4. Define history
     history = {'train_loss': [], 'val_loss': []}
 
-
     # 5. Training loop
     for epoch in range(max_epochs):
         # --- Training Phase ---
@@ -68,13 +67,27 @@ def simplified_trainer(
             
             # 5.1.3 Forward pass: Get predictions from the model
             predictions = model(images)
+            predictions = predictions.reshape([predictions.shape[0], predictions.shape[2]])
+
+            predictions = torch.clamp(predictions, min=1e-6)
             
             # 5.1.4 Calculate loss
+            print(model.loss_fn)
             loss = model.loss_fn(predictions, responses)
             
+            if epoch in [0, 9]:
+                print("responses mean/min/max:", responses.mean().item(), responses.min().item(), responses.max().item())
+                print("predictions mean/min/max:", predictions.mean().item(), predictions.min().item(), predictions.max().item())
+                print("Responses shape: ", responses.shape)
+                print("Predictions shape: ", predictions.shape)
+                # print("response 0: ", responses[0][:10])
+                # print("prediction 0: ", predictions[0][:10])
+                print("-----")
+                print("loss: ", loss)
+            
             # 5.1.5 Add regularization
-            if hasattr(model, 'regularizer'):
-                loss = loss + model.regularizer()
+            # if hasattr(model, 'regularizer'):
+            #     loss = loss + model.regularizer()
             
             # 5.1.6 Backward pass (to calculate gradients)
             loss.backward()
@@ -106,7 +119,6 @@ def simplified_trainer(
         print(f'Epoch {epoch+1}: Train Loss: {epoch_train_loss:.4f}, Val Loss: {epoch_val_loss:.4f}')
 
         # --- Early Stopping Check ---
-        # Use val_loss for early stopping. For correlation, you would calculate that separately.
         if early_stopping(epoch_val_loss):
             print(f"Early stopping triggered after epoch {epoch+1}")
             break
@@ -115,6 +127,20 @@ def simplified_trainer(
 
 
 
+# Regularizer output looks like this
+#   tensor(10276653., device='mps:0', grad_fn=<AddBackward0>)
+#   tensor(10269629., device='mps:0', grad_fn=<AddBackward0>)
+#   tensor(10264441., device='mps:0', grad_fn=<AddBackward0>)
+#   tensor(10260546., device='mps:0', grad_fn=<AddBackward0>)
+#   tensor(10261135., device='mps:0', grad_fn=<AddBackward0>)
+#   tensor(10257551., device='mps:0', grad_fn=<AddBackward0>)
+#   tensor(10257778., device='mps:0', grad_fn=<AddBackward0>)
+#   tensor(10262600., device='mps:0', grad_fn=<AddBackward0>)
+#   tensor(10264489., device='mps:0', grad_fn=<AddBackward0>)
+#   tensor(10267372., device='mps:0', grad_fn=<AddBackward0>)
+#   tensor(10265586., device='mps:0', grad_fn=<AddBackward0>)
+#   tensor(10260256., device='mps:0', grad_fn=<AddBackward0>)
+#   tensor(10252509., device='mps:0', grad_fn=<AddBackward0>)
 
 # from nnfabrik.utility.nn_helpers import set_random_seed
 
