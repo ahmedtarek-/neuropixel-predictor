@@ -24,28 +24,28 @@ def total_variation(x):
 
 class MEIMethod:
     def __init__(self, config: MEIConfig):
-        self.cfg = config
+        self.config = config
 
     def loss(self, model, image, idx):
         """Define the objective depending on CEI / VEI±."""
-        if self.cfg.mode == "cei":
+        if self.config.mode == "cei":
             pred = model(image)[0, idx]
             loss = -pred
 
-        elif self.cfg.mode == "vei_plus":
+        elif self.config.mode == "vei_plus":
             pred_var = model.predict_variance(image)[0, idx]
             loss = -pred_var
 
-        elif self.cfg.mode == "vei_minus":
+        elif self.config.mode == "vei_minus":
             pred_var = model.predict_variance(image)[0, idx]
             loss = pred_var  # minimize variance
 
         else:
-            raise ValueError(f"Unknown MEI mode: {self.cfg.mode}")
+            raise ValueError(f"Unknown MEI mode: {self.config.mode}")
 
         # Regularizers
-        l2_reg = self.cfg.l2_lambda * (image ** 2).mean()
-        tv_reg = self.cfg.tv_lambda * total_variation(image)
+        l2_reg = self.config.l2_lambda * (image ** 2).mean()
+        tv_reg = self.config.tv_lambda * total_variation(image)
 
         return loss + l2_reg + tv_reg
 
@@ -53,12 +53,12 @@ class MEIMethod:
         """Run gradient ascent to obtain MEI."""
         # Initialize input with Gaussian noise
         image = (
-            torch.randn(image_shape, device=device) * self.cfg.init_std
+            torch.randn(image_shape, device=device) * self.config.init_std
         ).requires_grad_(True)
 
-        optimizer = torch.optim.Adam([image], lr=self.cfg.lr)
+        optimizer = torch.optim.Adam([image], lr=self.config.lr)
 
-        for step in range(self.cfg.steps):
+        for step in range(self.config.steps):
             optimizer.zero_grad()
 
             loss = self.loss(model, image, neuron_idx)
@@ -67,6 +67,6 @@ class MEIMethod:
             optimizer.step()
 
             # Keep image in allowed range
-            image.data.clamp_(self.cfg.clip_min, self.cfg.clip_max)
+            image.data.clamp_(self.config.clip_min, self.config.clip_max)
 
         return image.detach()
