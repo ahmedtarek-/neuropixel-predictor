@@ -78,8 +78,6 @@ def simplified_trainer(
             if epoch in [0, 9]:
                 print("responses mean/min/max:", responses.mean().item(), responses.min().item(), responses.max().item())
                 print("predictions mean/min/max:", predictions.mean().item(), predictions.min().item(), predictions.max().item())
-                print("Responses shape: ", responses.shape)
-                print("Predictions shape: ", predictions.shape)
                 # print("response 0: ", responses[0][:10])
                 # print("prediction 0: ", predictions[0][:10])
                 print("-----")

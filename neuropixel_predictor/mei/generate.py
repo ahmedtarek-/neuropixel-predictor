@@ -1,3 +1,5 @@
+import torch
+
 from .methods import MEIMethod, MEIConfig
 
 def generate_mei(model, neuron_idx, image_shape,
