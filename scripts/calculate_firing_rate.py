@@ -1,8 +1,14 @@
 """
+Given a single unit file name, calculates firing rate.
 
-Given a single unit file name.
 
-TODO: Make saving folder and save filename as variables
+Hints
+
+- `data["stim_params_files"]["mb"]["stimulus"]["sequence"]["orientations"]`
+should match number of TTls in that protocol.
+
+- `data["stim_params_files"]["csd"]["stimulus"]["trials"]` gives number
+of trials in the checkerboard.
 
 @author: Ahmed Abdalfatah (@ahmedtarek-)
 """

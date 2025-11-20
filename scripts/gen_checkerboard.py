@@ -1,3 +1,11 @@
+"""
+Generates the checkerboard stimulus matrix.
+
+It flips and crops the matrix to match what was shown to the mouse.
+
+@author: Ahmed Abdalfatah (@ahmedtarek-)
+"""
+
 import numpy as np
 import random
 import os

@@ -56,7 +56,7 @@ def simplified_trainer(
         model.train()
         running_train_loss = 0.0
 
-        # 5.1 Loop within a batch
+        # 5.1 Loop within a bat ch
         for batch in tqdm(train_loader, desc=f'Epoch {epoch+1}/{max_epochs} (Train)'):
             # 5.1.1 Load data
             images, responses = batch
@@ -72,7 +72,6 @@ def simplified_trainer(
             predictions = torch.clamp(predictions, min=1e-6)
             
             # 5.1.4 Calculate loss
-            print(model.loss_fn)
             loss = model.loss_fn(predictions, responses)
             
             if epoch in [0, 9]:
@@ -84,8 +83,8 @@ def simplified_trainer(
                 print("loss: ", loss)
             
             # 5.1.5 Add regularization
-            # if hasattr(model, 'regularizer'):
-            #     loss = loss + model.regularizer()
+            if hasattr(model, 'regularizer'):
+                loss = loss + model.regularizer()
             
             # 5.1.6 Backward pass (to calculate gradients)
             loss.backward()

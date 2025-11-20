@@ -3,6 +3,16 @@ Created on Mon Sep 15 17:07:46 2025
 
 Generates a stimuli matrix numpy file and an optional video.
 
+- Can be used to generate:
+    - Moving Bars
+    - Moving Gratings
+    - Sparse Noise Light (on dark background)
+    - Sparse Noise Dark  (on light background)
+
+- Don't create checkerboard using this because it needs to be cropped first.
+    Use gen_checkerboard.py instead
+
+
 @author: kailun
 """
 import os
@@ -180,7 +190,9 @@ def saveVideo(
     plt.close()
 
 
-####%% Generate moving gratings or bars %%####
+##################################################
+#### Part 1: Generate moving gratings or bars ####
+##################################################
 
 orientRads = [0.75*np.pi, 0, np.pi]
 xLenPx = 36
@@ -209,7 +221,10 @@ widthDegs = barWidthDegs if useBar else waveLenDegs
 # with open('mb_trial.npy', 'wb') as f:
 #     np.save(f, movingStims)
 
-####%% Resize stim array (sparse noise, checkerboard) %%####
+########################################################
+#### Part 2: Sparse Noise and Checkerboard (resize) ####
+########################################################
+
 
 # stimPath = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Checkerboard_12_7_target_size_3_n_frames_500_20200430.npy'
 stimPath = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/locally_dark_sparse_noise_36_22_target_size_3_targets_per_frame_2_trials_10_background_1.0_20181120.npy'
