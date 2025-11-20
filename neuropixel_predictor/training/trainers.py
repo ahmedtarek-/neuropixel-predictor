@@ -83,8 +83,8 @@ def simplified_trainer(
                 print("loss: ", loss)
             
             # 5.1.5 Add regularization
-            if hasattr(model, 'regularizer'):
-                loss = loss + model.regularizer()
+            # if hasattr(model, 'regularizer'):
+            #     loss = loss + model.regularizer()
             
             # 5.1.6 Backward pass (to calculate gradients)
             loss.backward()
