@@ -29,15 +29,15 @@ class MEIMethod:
     def loss(self, model, image, idx):
         """Define the objective depending on CEI / VEI±."""
         if self.config.mode == "cei":
-            pred = model(image)[0, idx]
+            pred = model(image)[0, 0, idx]
             loss = -pred
 
         elif self.config.mode == "vei_plus":
-            pred_var = model.predict_variance(image)[0, idx]
+            pred_var = model.predict_variance(image)[0, 0, idx]
             loss = -pred_var
 
         elif self.config.mode == "vei_minus":
-            pred_var = model.predict_variance(image)[0, idx]
+            pred_var = model.predict_variance(image)[0, 0, idx]
             loss = pred_var  # minimize variance
 
         else:
@@ -49,7 +49,7 @@ class MEIMethod:
 
         return loss + l2_reg + tv_reg
 
-    def optimize(self, model, neuron_idx, image_shape, device="cuda"):
+    def optimize(self, model, neuron_idx, image_shape, steps, device="cuda"):
         """Run gradient ascent to obtain MEI."""
         # Initialize input with Gaussian noise
         image = (
@@ -58,10 +58,11 @@ class MEIMethod:
 
         optimizer = torch.optim.Adam([image], lr=self.config.lr)
 
-        for step in range(self.config.steps):
+        for step in range(steps):
             optimizer.zero_grad()
 
             loss = self.loss(model, image, neuron_idx)
+            print("loss: ", loss)
             loss.backward()
 
             optimizer.step()
