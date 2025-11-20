@@ -1,4 +1,5 @@
 import torch
+import matplotlib.pyplot as plt
 
 from .methods import MEIMethod, MEIConfig
 
@@ -20,9 +21,6 @@ def generate_mei(model, neuron_idx, image_shape,
     mei = mei_method.optimize(model, neuron_idx, image_shape, steps=steps, device=device)
     return mei
 
-import matplotlib.pyplot as plt
-import torch
-
 def plot_mei(mei_tensor, title="MEI"):
     """
     mei_tensor: torch.Tensor with shape (1, C, H, W) or (C, H, W)
@@ -33,13 +31,13 @@ def plot_mei(mei_tensor, title="MEI"):
     # If single channel: shape = (H, W)
     if img.dim() == 2:
         plt.imshow(img, cmap='gray')
-    
+
     # If multi-channel: shape = (C, H, W)
     elif img.dim() == 3:
         # reorder to (H, W, C)
         img = img.permute(1, 2, 0)
         plt.imshow(img)
-    
+
     else:
         raise ValueError(f"Unexpected image shape: {img.shape}")
 

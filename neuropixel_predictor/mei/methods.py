@@ -62,7 +62,7 @@ class MEIMethod:
             optimizer.zero_grad()
 
             loss = self.loss(model, image, neuron_idx)
-            print("loss: ", loss)
+            # print("loss: ", loss)
             loss.backward()
 
             optimizer.step()
