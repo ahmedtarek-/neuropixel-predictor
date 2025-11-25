@@ -1,7 +1,6 @@
 # neuropixel-predictor
 
 
-
 ## A. Working with environment
 - To create a new conda env using
 ```bash
@@ -28,8 +27,8 @@ The available data is.
 
 The current data that was extracted, incorporated and sanity checked:
 
-- [] `Sd36x22_l`: Sparse Noise Light (on dark background) 
-- [] `Sl36x22_d`: Sparse Noise Dark  (on light background)
+- [] `Sl36x22_d`: Sparse Noise Light (on dark background) 
+- [] `Sd36x22_l`: Sparse Noise Dark  (on light background)
 - [] `csd`: Current Source Density - Checker Board (binary)
 - [] `cm_18x11`: Checkermap (with greys)
 - [] `mb`: Moving Bar

@@ -8,15 +8,15 @@ Created on Thu Aug 16 08:31:45 2018
 #import scipy.io as io
 import numpy as np
 #import OurSetup
-import OurSetup_New as OurSetup
+import our_setup_new as OurSetup
 import matplotlib.pyplot as plt
 import ImageStimulus
-import MovingGratingStimulus
-import MovingLocalGratingStimulus
-import MovingBarStimulus
-import MovingBarGridStimulus
-import LoomingStimulus
-import NaturalImageStimulusWithGray_CG
+# import MovingGratingStimulus
+# import MovingLocalGratingStimulus
+# import MovingBarStimulus
+# import MovingBarGridStimulus
+# import LoomingStimulus
+# import NaturalImageStimulusWithGray_CG
 
 from time import time
 import CSDStimulus    
@@ -25,7 +25,8 @@ from scipy.signal import chirp
 
 # %%# %
 start = time()
-stimuli = ['mb','sl36x22_3','sd36x22_3','chi','mg','csd'] #['slquick'] ['slquick'] #
+# stimuli = ['mb','sl36x22_3','sd36x22_3','chi','mg','csd'] #['slquick'] ['slquick'] #
+stimuli = ['sl36x22_3']
 
 #['cm_36x22']#['mb_thin','sl36x22_05','sd36x22_05','sl36x22_01','sd36x22_01','chi_ultra_fast','mg','mb','sl36x22_2','sd36x22_2','sl36x22_1','sd36x22_1','chi','lo','cm_36x22','csd'] # ['slquick'] # ['mb','sl15x15_2','sd15x15_2','sl15x15_1','sd15x15_1','sl15x15_3','sd15x15_3','mg'] 
 # ['slquick', 'sdquick','mg','mb','lo','chi','Kerstin_long','Kerstin_short','slquick','sdquick',] #['slquick'] # ['Kerstin short']
@@ -73,11 +74,11 @@ analysis = {}
 n_stimuli = len(stimuli)
 
 #%% we open a window for all stimuli. then we might have to set the backgorund
-win,trigger = OurSetup.OpenScreen(monitor['background'],monitor['distance'],monitor['type'])
+win = OurSetup.OpenScreen(monitor['background'], monitor['distance'], monitor['type'])
 
 setup = {}
 setup['win'] = win
-setup['trigger'] = trigger
+# setup['trigger'] = trigger
  #%%
 for i in range(n_stimuli):
     # %
@@ -102,7 +103,7 @@ for i in range(n_stimuli):
     ################## search stimulus #############################
     if stimulus_type == 'slquick':
         # load the stimulus file
-#        filename = 'locally_light_sparse_noise_45_25_target_size_3_targets_per_frame_2_trials_10_background_-1.0_20181020.npy' 
+        #filename = 'locally_light_sparse_noise_45_25_target_size_3_targets_per_frame_2_trials_10_background_-1.0_20181020.npy' 
         filename = 'locally_light_sparse_noise_36_22_target_size_3_targets_per_frame_2_trials_10_background_-1.0_20181120.npy'#'locally_light_sparse_noise_45_25_target_size_3_targets_per_frame_2_trials_10_background_-1.0_20181020.npy'
         stimulus['filename'] = filename
         stimulus_tmp = np.load('stimuli/'+filename).item()
@@ -121,11 +122,11 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         # run
         ImageStimulus.present_images(stimulus_frames,params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
             
     elif stimulus_type == 'sdquick':
         # load the stimulus file
-#        filename = 'locally_dark_sparse_noise_45_25_target_size_3_targets_per_frame_2_trials_10_background_1.0_20181020.npy'
+        # filename = 'locally_dark_sparse_noise_45_25_target_size_3_targets_per_frame_2_trials_10_background_1.0_20181020.npy'
         filename = 'locally_dark_sparse_noise_36_22_target_size_3_targets_per_frame_2_trials_10_background_1.0_20181120.npy'#
         stimulus['filename'] = filename
         stimulus_tmp = np.load('stimuli/'+filename).item()
@@ -144,7 +145,7 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         # run
         ImageStimulus.present_images(stimulus_frames,params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         
 
     elif stimulus_type == 'mlg':
@@ -198,7 +199,7 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         # run
         ImageStimulus.present_images(stimulus_frames,params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         
     elif stimulus_type == 'sl45x25_1':
         # load the stimulus file
@@ -220,7 +221,7 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         # run
         ImageStimulus.present_images(stimulus_frames,params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         
     elif stimulus_type == 'sl45x25_2':
         # load the stimulus file
@@ -242,7 +243,7 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         # run
         ImageStimulus.present_images(stimulus_frames,params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         
     elif stimulus_type == 'sd45x25_2':
         # load the stimulus file
@@ -264,7 +265,7 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         # run
         ImageStimulus.present_images(stimulus_frames,params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
     
     elif stimulus_type == 'sl45x25_3':
         # load the stimulus file
@@ -287,7 +288,7 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         # run
         ImageStimulus.present_images(stimulus_frames,params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         
     elif stimulus_type == 'sd45x25_3':
         # load the stimulus file
@@ -309,7 +310,7 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         # run
         ImageStimulus.present_images(stimulus_frames,params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         
     ################## Light sparse noise ###########################
     
@@ -658,10 +659,12 @@ for i in range(n_stimuli):
     
     elif stimulus_type == 'sl36x22_3':
         # load the stimulus file
+        # TAREK: HERE
         filename = 'locally_light_sparse_noise_36_22_target_size_3_targets_per_frame_2_trials_10_background_-1.0_20181120.npy'#'locally_light_sparse_noise_36_18_target_size_2_targets_per_frame_4_trials_30_background_0.0_20181115.npy'
+        stimPath = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/locally_light_sparse_noise_36_22_target_size_3_targets_per_frame_2_trials_10_background_-1.0_20181120.npy'
                     
         stimulus['filename'] = filename
-        stimulus_tmp = np.load('stimuli/'+filename).item()
+        stimulus_tmp = np.load(stimPath, allow_pickle=True, encoding='latin1').item()
         stimulus_frames = stimulus_tmp['frames']
         background = stimulus_tmp['background']
         
@@ -869,6 +872,7 @@ for i in range(n_stimuli):
 
 ################ end of sparse noised signal ###############################
 
+
 ################ Kerstin/oddball stim   ###############################
     elif stimulus_type == 'Kerstin_short':
         stimulus['trials'] = 10
@@ -891,26 +895,26 @@ for i in range(n_stimuli):
         params['stimulus'] = stimulus
         params['analysis'] = analysis
         # run
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         stimulus['orientations'] = np.linspace(0.,360.-(360/8.),8) # np.array([270.]) #  np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12)  # np.array([210.])
         params['stimulus'] = stimulus
         MovingGratingStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
         
         stimulus['orientations'] = [135,45,45,45,45,45,45,45] # np.array([270.]) #  np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12)  # np.array([210.])
         params['stimulus'] = stimulus
         MovingGratingStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
         
         stimulus['orientations'] = [45,45,45,45,45] # np.array([270.]) #  np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12)  # np.array([210.])
         stimulus['local_type'] = 'repeat'
         params['stimulus'] = stimulus
         MovingGratingStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
         
         stimulus['duration'] = 10.0
@@ -918,7 +922,7 @@ for i in range(n_stimuli):
         stimulus['local_type'] = 'long'
         params['stimulus'] = stimulus
         MovingGratingStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
         
         stimulus['local_type'] = 'do nothing'
@@ -926,20 +930,20 @@ for i in range(n_stimuli):
         stimulus['orientations'] = np.linspace(0.,360.-(360/8.),8) # np.array([270.]) #  np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12)  # np.array([210.])
         params['stimulus'] = stimulus
         MovingGratingStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
         
         stimulus['orientations'] = [45,135,135,135,135,135,135,135] # np.array([270.]) #  np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12)  # np.array([210.])
         params['stimulus'] = stimulus
         MovingGratingStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
         
         stimulus['orientations'] = [135,135,135,135,135] # np.array([270.]) #  np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12)  # np.array([210.])
         stimulus['local_type'] = 'repeat'
         params['stimulus'] = stimulus
         MovingGratingStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
         
         stimulus['duration'] = 10.0
@@ -947,7 +951,7 @@ for i in range(n_stimuli):
         stimulus['local_type'] = 'long'
         params['stimulus'] = stimulus
         MovingGratingStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
         
         stimulus['local_type'] = 'do nothing'
@@ -955,9 +959,9 @@ for i in range(n_stimuli):
         stimulus['orientations'] = np.linspace(0.,360.-(360/8.),8) # np.array([270.]) #  np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12)  # np.array([210.])
         params['stimulus'] = stimulus
         MovingGratingStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
 
     elif stimulus_type == 'Kerstin_long':
         stimulus['trials'] = 10
@@ -980,26 +984,26 @@ for i in range(n_stimuli):
         params['stimulus'] = stimulus
         params['analysis'] = analysis
         # run
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         stimulus['orientations'] = np.linspace(0.,360.-(360/8.),8) # np.array([270.]) #  np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12)  # np.array([210.])
         params['stimulus'] = stimulus
         MovingGratingStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
         
         stimulus['orientations'] = [135,45,45,45,45,45,45,45] # np.array([270.]) #  np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12)  # np.array([210.])
         params['stimulus'] = stimulus
         MovingGratingStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
         
         stimulus['orientations'] = [45,45,45,45,45] # np.array([270.]) #  np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12)  # np.array([210.])
         stimulus['local_type'] = 'repeat'
         params['stimulus'] = stimulus
         MovingGratingStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
         
         stimulus['duration'] = 20.0
@@ -1007,7 +1011,7 @@ for i in range(n_stimuli):
         stimulus['local_type'] = 'long'
         params['stimulus'] = stimulus
         MovingGratingStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
         
         stimulus['local_type'] = 'do nothing'
@@ -1015,20 +1019,20 @@ for i in range(n_stimuli):
         stimulus['orientations'] = np.linspace(0.,360.-(360/8.),8) # np.array([270.]) #  np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12)  # np.array([210.])
         params['stimulus'] = stimulus
         MovingGratingStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
         
         stimulus['orientations'] = [45,135,135,135,135,135,135,135] # np.array([270.]) #  np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12)  # np.array([210.])
         params['stimulus'] = stimulus
         MovingGratingStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
         
         stimulus['orientations'] = [135,135,135,135,135] # np.array([270.]) #  np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12)  # np.array([210.])
         stimulus['local_type'] = 'repeat'
         params['stimulus'] = stimulus
         MovingGratingStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
         
         stimulus['duration'] = 20.0
@@ -1036,7 +1040,7 @@ for i in range(n_stimuli):
         stimulus['local_type'] = 'long'
         params['stimulus'] = stimulus
         MovingGratingStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
         
         stimulus['local_type'] = 'do nothing'
@@ -1044,9 +1048,9 @@ for i in range(n_stimuli):
         stimulus['orientations'] = np.linspace(0.,360.-(360/8.),8) # np.array([270.]) #  np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12)  # np.array([210.])
         params['stimulus'] = stimulus
         MovingGratingStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         OurSetup.present_pause(10*120,win)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
     
         
  ################ End Kerstin/oddball stim   ###############################
@@ -1072,7 +1076,7 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         # run
         MovingGratingStimulus.run_stimulus(params,setup)    
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
 
     elif stimulus_type == 'mb': #mooving bar white or black on gray background
         stimulus['trials'] = 15
@@ -1091,7 +1095,7 @@ for i in range(n_stimuli):
         params['stimulus'] = stimulus
         params['analysis'] = analysis
         MovingBarStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
     
     elif stimulus_type == 'mb_thin': #mooving bar white or black on gray background
         stimulus['trials'] = 10
@@ -1110,7 +1114,7 @@ for i in range(n_stimuli):
         params['stimulus'] = stimulus
         params['analysis'] = analysis
         MovingBarStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         
     elif stimulus_type == 'mp': #moving point
         stimulus['trials'] = 10
@@ -1129,7 +1133,7 @@ for i in range(n_stimuli):
         params['stimulus'] = stimulus
         params['analysis'] = analysis
         MovingBarStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         
     elif stimulus_type == 'mbg': #mooving bar white or black on gray background
         stimulus['trials'] = 10
@@ -1149,7 +1153,7 @@ for i in range(n_stimuli):
         params['stimulus'] = stimulus
         params['analysis'] = analysis
         MovingBarGridStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         
     elif stimulus_type == 'cm_36x22': 
         # load the stimulus file
@@ -1175,7 +1179,7 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         # run
         ImageStimulus.present_images(stimulus_frames,params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         
         
     elif stimulus_type == 'cm_25x25': 
@@ -1202,7 +1206,7 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         # run
         ImageStimulus.present_images(stimulus_frames,params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
     
     elif stimulus_type == 'cm_10x10': 
         # load the stimulus file
@@ -1228,7 +1232,7 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         # run
         ImageStimulus.present_images(stimulus_frames,params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
 
     elif stimulus_type == 'chi':
         # load the stimulus file
@@ -1251,7 +1255,7 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         # run
         ImageStimulus.present_images_with_first_frame_trigger(stimulus_frames,params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
 
     elif stimulus_type == 'chi_fast':
         # load the stimulus file
@@ -1275,7 +1279,7 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         # run
         ImageStimulus.present_images_with_first_frame_trigger(stimulus_frames,params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         
     elif stimulus_type == 'chi_ultra_fast':
         # load the stimulus file
@@ -1299,7 +1303,7 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         # run
         ImageStimulus.present_images_with_first_frame_trigger(stimulus_frames,params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
     
     elif stimulus_type == 'chi_jon_fast':
         # load the stimulus file
@@ -1329,7 +1333,7 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         # run
         ImageStimulus.present_images_with_first_frame_trigger(stimulus_frames,params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         
     elif stimulus_type == 'chi2':
         # load the stimulus file
@@ -1353,7 +1357,7 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         # run
         ImageStimulus.present_images_with_first_frame_trigger(stimulus_frames,params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         
     elif stimulus_type == 'lo':
         params['monitor']['background'] = [1.,1.,1.]
@@ -1372,7 +1376,7 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         
         LoomingStimulus.run_stimulus(params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
         
     elif stimulus_type == 'testdome':
         # load the stimulus file
@@ -1411,7 +1415,7 @@ for i in range(n_stimuli):
         stimulus['scale'] = 10. # scale is now in the units of deg, i.e. scale = 1 means that one noise pixel has the size of 1x1 deg
         stimulus['stimulus_duration_in_frames'] = 120 # 1 sec
         stimulus['position'] = position# in deg        
-#        analysis['type'] = 'STA'        
+        # analysis['type'] = 'STA'        
         params['stimulus'] = stimulus
         params['analysis'] = analysis
 
@@ -1442,10 +1446,10 @@ for i in range(n_stimuli):
         
     elif stimulus_type == 'testpic':
         # load the stimulus file
-#        filename = 'locally_dark_sparse_noise_45_25_target_size_3_targets_per_frame_2_trials_10_background_1.0_20181020.npy'
+        # filename = 'locally_dark_sparse_noise_45_25_target_size_3_targets_per_frame_2_trials_10_background_1.0_20181020.npy'
         filename = 'locally_dark_sparse_noise_36_22_target_size_3_targets_per_frame_2_trials_10_background_1.0_20181120.npy'#
         stimulus['filename'] = filename
-#        img = plt.imread('C:/Users/AGKremkow/Desktop/Visual-Stimuli-Neuropixel/VisualStimuli/stimuli/square_22x22.png')
+        # img = plt.imread('C:/Users/AGKremkow/Desktop/Visual-Stimuli-Neuropixel/VisualStimuli/stimuli/square_22x22.png')
         img = plt.imread('C:/Users/AGKremkow/Desktop/Visual-Stimuli-Neuropixel/VisualStimuli/stimuli/Capturecm36-22.png')
         img = img.mean(2)
         img -= img.min()
@@ -1454,7 +1458,7 @@ for i in range(n_stimuli):
         img -= 1.
         
         
-#        stimulus_frames = np.zeros([739,739,2])
+        # stimulus_frames = np.zeros([739,739,2])
         stimulus_frames = np.zeros([420,685,2])
         stimulus_frames[:,:,0] = img
         stimulus_frames[:,:,1] = img
@@ -1472,10 +1476,10 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         # run
         ImageStimulus.present_images(stimulus_frames,params,setup)
-        print "Time passed %d" %(time()-start) + ' seconds'
+        print("Time passed %d" %(time()-start) + ' seconds')
      
-print "Times past %d" %(time()-start) + ' secondes'
+print("Times past %d" %(time()-start) + ' secondes')
 win.close()
 # close trigger
-trigger.task.close()
+# trigger.task.close()
 ## %%
