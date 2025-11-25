@@ -25,7 +25,7 @@ checker = np.random.randint(2, size=(xn,yn)).astype(float)
 checker *= 2.
 checker -= 1.
 
-# 4. Flip the checker matrix
+# 4. Flip the checker matrix vertically
 checker = np.flip(checker, 0)
 
 # 5. Crop middle 36x22 part.

@@ -1,6 +1,8 @@
 """
 Given a single unit file name, calculates firing rate.
 
+Removes the units that are 'Flags' or 'Dendrites' (based on manual classification)
+{'MPW-Dendrite', 'Flag', 'MPW-Axon', 'SU-Regular', 'SU-Small', 'SU-Fast'}
 
 Hints
 
@@ -18,13 +20,14 @@ import numpy as np
 import pickle
 
 NP_FRQ = 30_000
+EXCLUDE_UNITS = ['Flag', 'MPW-Dendrite']
+
 stimulus_name = 'Sd36x22_l_3'
 
 # Loading the file
 single_unit_folder = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/data-single-unit'
 file_name = '2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
 file_path = os.path.join(single_unit_folder, file_name)
-
 
 # Load pickle
 import pandas as pd
@@ -42,6 +45,12 @@ stimulus_length = len(stimulus_ttls) - 1
 
 # To get spiketimes aligned
 st_aligned = data['spiketimes_aligned']
+
+# Clean all units that are in EXCLUDE_UNITS
+clean_st_aligned = [
+    st for i, st in enumerate(st_aligned)
+    if data['classif_from_GUI']['Classification'][i] not in EXCLUDE_UNITS
+]
 
 # Calculating spike count per neuron within every frame for the csd
 firing_rates = []

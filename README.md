@@ -26,16 +26,29 @@ The available data is.
 'cm_18x11_1', 'TTLs_FM_start', 'TTLs_FM_stop', 'TTLs_act_start', 'TTLs_act_stop']
 ```
 
-The current data that was extracted and incorporated into the training are:
+The current data that was extracted, incorporated and sanity checked:
 
-- [] `Sd36x22_l_3`: Sparse Noise Light (on dark background) 
-- [] `Sl36x22_d_3`: Sparse Noise Dark  (on light background)
-- [] `csd`: Checkermap
+- [] `Sd36x22_l`: Sparse Noise Light (on dark background) 
+- [] `Sl36x22_d`: Sparse Noise Dark  (on light background)
+- [] `csd`: Current Source Density - Checker Board (binary)
+- [] `cm_18x11`: Checkermap (with greys)
 - [] `mb`: Moving Bar
+- [] `mg_sin`: Moving Grating
+- [] `mg_sq`: Moving Grating
 - [] `chirp`
-- [] `Nat_Mov`
+- [] `lo`: Looming
+- [] `sg`: Static Gratings
+
+- [] `Nat_Mov` will check later
+
 
 The Scripts README details which scripts have been used to generate the stimului matrices
 that have been used in training.
+
+**Data Sanity**
+
+Use the `run_stimulus` script to generate visual stimuli and compare them against the matrices
+that will be used as input to the network. This should be done to every stimulus mentiond
+above.
 
 
