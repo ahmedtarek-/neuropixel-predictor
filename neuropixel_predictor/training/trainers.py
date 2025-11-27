@@ -11,8 +11,8 @@ from .early_stopping import EarlyStopping
 
 def simplified_trainer(
     model,
-    train_loader,
-    val_loader,
+    train_loaders,
+    val_loaders,
     loss_fn,
     device='cuda',
     max_epochs=100,
@@ -24,8 +24,8 @@ def simplified_trainer(
     A simple trainer loop for the network
     Args:
         model: Your neural network (with .core and .readout)
-        train_loader: PyTorch DataLoader for training data
-        val_loader: PyTorch DataLoader for validation data
+        train_loaders: dict of data_key - PyTorch DataLoader for training data
+        val_loaders: dict of data_key - PyTorch DataLoader for validation data
         loss_fn: Loss function (e.g., Poisson loss)
         device: Device to train on
         max_epochs: Maximum number of epochs to train for
@@ -56,69 +56,72 @@ def simplified_trainer(
         model.train()
         running_train_loss = 0.0
 
-        # 5.1 Loop within a bat ch
-        for batch in tqdm(train_loader, desc=f'Epoch {epoch+1}/{max_epochs} (Train)'):
-            # 5.1.1 Load data
-            images, responses = batch
-            images, responses = images.to(device), responses.to(device)
-
-            # 5.1.2 Put all gradients to zero
-            optimizer.zero_grad()
-            
-            # 5.1.3 Forward pass: Get predictions from the model
-            predictions = model(images)
-            predictions = predictions.reshape([predictions.shape[0], predictions.shape[2]])
-
-            predictions = torch.clamp(predictions, min=1e-6)
-            
-            # 5.1.4 Calculate loss
-            loss = model.loss_fn(predictions, responses)
-            
-            if epoch in [0, 9]:
-                print("responses mean/min/max:", responses.mean().item(), responses.min().item(), responses.max().item())
-                print("predictions mean/min/max:", predictions.mean().item(), predictions.min().item(), predictions.max().item())
-                # print("response 0: ", responses[0][:10])
-                # print("prediction 0: ", predictions[0][:10])
-                print("-----")
-                print("loss: ", loss)
-            
-            # 5.1.5 Add regularization
-            # if hasattr(model, 'regularizer'):
-            #     loss = loss + model.regularizer()
-            
-            # 5.1.6 Backward pass (to calculate gradients)
-            loss.backward()
-
-            # 5.1.7 Optimize (update optimizer with relevant gradients)
-            optimizer.step()
-
-            # 5.1.8 Accumulate loss
-            running_train_loss += loss.item() * images.size(0)
-
-        # 5.2 Calculate loss for the current epoch
-        epoch_train_loss = running_train_loss / len(train_loader.dataset)
-        history['train_loss'].append(epoch_train_loss)
-
-        # --- Validation Phase ---
-        model.eval()
-        running_val_loss = 0.0
-        with torch.no_grad():
-            for batch in val_loader:
+        # 5.1 Loop within a batch
+        for data_key in train_loaders.keys():
+            print("\nCurrently learning for data_key: ", data_key)
+            print("----")
+            for batch in tqdm(train_loaders[data_key], desc=f'Epoch {epoch+1}/{max_epochs} (Train)'):
+                # 5.1.1 Load data
                 images, responses = batch
                 images, responses = images.to(device), responses.to(device)
-                predictions = model(images)
-                loss = loss_fn(predictions, responses)
-                running_val_loss += loss.item() * images.size(0)
 
-        epoch_val_loss = running_val_loss / len(val_loader.dataset)
-        history['val_loss'].append(epoch_val_loss)
+                # 5.1.2 Put all gradients to zero
+                optimizer.zero_grad()
+                
+                # 5.1.3 Forward pass: Get predictions from the model
+                predictions = model(images, data_key=data_key)
+                predictions = predictions.reshape([predictions.shape[0], predictions.shape[2]])
 
-        print(f'Epoch {epoch+1}: Train Loss: {epoch_train_loss:.4f}, Val Loss: {epoch_val_loss:.4f}')
+                predictions = torch.clamp(predictions, min=1e-6)
+                
+                # 5.1.4 Calculate loss
+                loss = model.loss_fn(predictions, responses)
+                
+                if epoch in [0, 9]:
+                    print("responses mean/min/max:", responses.mean().item(), responses.min().item(), responses.max().item())
+                    print("predictions mean/min/max:", predictions.mean().item(), predictions.min().item(), predictions.max().item())
+                    # print("response 0: ", responses[0][:10])
+                    # print("prediction 0: ", predictions[0][:10])
+                    print("-----")
+                    print("loss: ", loss)
+                
+                # 5.1.5 Add regularization
+                # if hasattr(model, 'regularizer'):
+                #     loss = loss + model.regularizer()
+                
+                # 5.1.6 Backward pass (to calculate gradients)
+                loss.backward()
 
-        # --- Early Stopping Check ---
-        if early_stopping(epoch_val_loss):
-            print(f"Early stopping triggered after epoch {epoch+1}")
-            break
+                # 5.1.7 Optimize (update optimizer with relevant gradients)
+                optimizer.step()
+
+                # 5.1.8 Accumulate loss
+                running_train_loss += loss.item() * images.size(0)
+
+            # 5.2 Calculate loss for the current epoch
+            epoch_train_loss = running_train_loss / len(train_loaders[data_key].dataset)
+            history['train_loss'].append(epoch_train_loss)
+
+            # --- Validation Phase ---
+            model.eval()
+            running_val_loss = 0.0
+            with torch.no_grad():
+                for batch in val_loaders[data_key]:
+                    images, responses = batch
+                    images, responses = images.to(device), responses.to(device)
+                    predictions = model(images, data_key=data_key)
+                    loss = loss_fn(predictions, responses)
+                    running_val_loss += loss.item() * images.size(0)
+
+            epoch_val_loss = running_val_loss / len(val_loaders[data_key].dataset)
+            history['val_loss'].append(epoch_val_loss)
+
+            print(f'Epoch {epoch+1}: Train Loss: {epoch_train_loss:.4f}, Val Loss: {epoch_val_loss:.4f}')
+
+            # --- Early Stopping Check ---
+            if early_stopping(epoch_val_loss):
+                print(f"Early stopping triggered after epoch {epoch+1}")
+                break
 
     return model, history
 
@@ -405,3 +408,4 @@ def simplified_trainer(
 #         else output["best_model_stats"][score_measure]["validation"]
 #     )
 #     return score, output, model.state_dict()
+

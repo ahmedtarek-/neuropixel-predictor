@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 from .methods import MEIMethod, MEIConfig
 
-def generate_mei(model, neuron_idx, image_shape,
+def generate_mei(model, data_key, neuron_idx, image_shape,
                  steps=300, mode="cei", device="cuda"):
     """
     High-level wrapper to generate a MEI.
@@ -18,7 +18,7 @@ def generate_mei(model, neuron_idx, image_shape,
         # Optional: warmup or model-specific initialization
         pass
 
-    mei = mei_method.optimize(model, neuron_idx, image_shape, steps=steps, device=device)
+    mei = mei_method.optimize(model, data_key, neuron_idx, image_shape, steps=steps, device=device)
     return mei
 
 def plot_mei(mei_tensor, title="MEI"):
