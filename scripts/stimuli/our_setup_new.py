@@ -153,13 +153,12 @@ def OpenScreen(background_color,monitor_distance,monitor_type):
         background_color = [-1,-1,-1]
         DellMonitor = monitors.Monitor('') # to be updated
         DellMonitor.setDistance(monitor_distance)
-        win= visual.Window(monitor = DellMonitor,screen=0,waitBlanking=True)#,size=[1512, 982],fullscr=True,allowGUI=False,units='deg',color=background_color)
+        win= visual.Window(monitor=DellMonitor, screen=0, waitBlanking=True) # fullscr=True, size=[1512, 982],allowGUI=False,units='deg',color=background_color)
         print('dell screen options selected')
         
           
     # trigger = Trigger()
     time.sleep(1.)
-    
     return win
 
 

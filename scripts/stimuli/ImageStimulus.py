@@ -16,13 +16,13 @@ def present_images(stimulus_frames,params,setup):
     filename_save = OurSetup.generate_filename_and_make_folders(params)
     # %% Create window
     win = setup['win']
-    trigger = setup['trigger']
+    # trigger = setup['trigger']
     background_color = params['monitor']['background']
     background_color
     win.setRGB(background_color)
     win.flip()
-    #win,trigger = OurSetup.OpenScreen(background_color,monitor_distance)
-    trigger.Stimulus_Start()
+    win = OurSetup.OpenScreen(background_color, params['monitor']['distance'], params['monitor']['type'])
+    # trigger.Stimulus_Start()
      # we present background for few second such that the retina can adapt
     onset_adaptation_time_sec = params['stimulus']['onset_adaptation_time_sec']
     onset_adaptation_time_frames = int(np.round(onset_adaptation_time_sec * 120))
@@ -63,8 +63,8 @@ def present_images(stimulus_frames,params,setup):
                 images[str(frameN)].draw()
                 win.flip()
                 #raw_input()
-                if flipN == 0:
-                    trigger.FrameTime()
+                # if flipN == 0:
+                    # trigger.FrameTime()
         # we flip one more time to make the screen gray
         win.flip()
         OurSetup.present_pause(360,win)# in frames
@@ -72,7 +72,7 @@ def present_images(stimulus_frames,params,setup):
     # %%
     #OurSetup.present_pause(240,win)# in frames
     
-    trigger.Stimulus_Stop()
+    # trigger.Stimulus_Stop()
     #win.close()
 
 
@@ -82,12 +82,12 @@ def present_images_with_first_frame_trigger(stimulus_frames,params,setup):
     filename_save = OurSetup.generate_filename_and_make_folders(params)
     # %% Create window
     win = setup['win']
-    trigger = setup['trigger']
+    # trigger = setup['trigger']
     background_color = params['monitor']['background']
     win.setRGB(background_color)
     win.flip()
-    #win,trigger = OurSetup.OpenScreen(background_color,monitor_distance)
-    trigger.Stimulus_Start()
+    win = OurSetup.OpenScreen(background_color,monitor_distance)
+    # trigger.Stimulus_Start()
      # we present background for few second such that the retina can adapt
     onset_adaptation_time_sec = params['stimulus']['onset_adaptation_time_sec']
     onset_adaptation_time_frames = int(np.round(onset_adaptation_time_sec * 120))
@@ -124,7 +124,7 @@ def present_images_with_first_frame_trigger(stimulus_frames,params,setup):
                 images[str(frameN)].draw()
                 win.flip()
                 if frameN == 0:
-                    trigger.FrameTime()
+                    # trigger.FrameTime()
                     triggercount += 1
                     print(str(triggercount)+'-'+str(params['stimulus']['trials']))
         # we flip one more time to make the screen gray
@@ -134,115 +134,4 @@ def present_images_with_first_frame_trigger(stimulus_frames,params,setup):
     # %%
     #OurSetup.present_pause(240,win)# in frames
     
-    trigger.Stimulus_Stop()
-
-#
-### this section doesn t seem to be used at all
-#def present_images_with_delay(stimulus_frames,scale,frame_durations,delay_duration,position,background_color,n_protocol,monitor_distance):
-#    # open screen
-#    win,trigger = OurSetup.OpenScreen(background_color,monitor_distance)
-#    trigger.Stimulus_Start()
-#    
-#    # %% generate images
-#    n_frames = stimulus_frames.shape[2]
-#    stim_size = np.array([stimulus_frames.shape[1],stimulus_frames.shape[0]]).astype('float')
-#    images = {}
-#    for frameN in range(n_frames):
-#        images[str(frameN)]=visual.ImageStim(win,stimulus_frames[:,:,frameN],size=stim_size*scale,pos=position)
-#    
-#    
-#    # protocol
-#    for k in range(n_protocol):
-#        trigger.triggger_protocol()
-#        time.sleep(0.1)
-#       
-#    n_trials = 1
-#    
-#    stim=visual.TextStim(win)
-#    countdown = 20*2
-#    for i in range(countdown):
-#        stim.text = str(countdown-i)
-#        stim.pos = [0,0]
-#        stim.draw()
-#        win.flip()
-#    
-#    # present images
-#    for ti in range(n_trials):
-#        for stim_n in range(len(frame_durations)):
-#            frame_duration = frame_durations[stim_n]
-#            for flipN in range(frame_duration):
-#                images[str(frameN)].draw()
-#                win.flip()
-#                if flipN == 0:
-#                    trigger.FrameTime()
-#        # after we have presented the stimulus we will wait a for the duration o delay. we have to present something for reliable frames
-#        for i in range(delay_duration):
-#            stim.text = 'delay'
-#            stim.pos = [-2000,0] # should not be visible
-#            stim.draw()
-#            win.flip()
-#    
-#    # we flip one more time to make the screen gray
-#    win.flip()
-#    
-#    # %%
-#    trigger.Stimulus_Stop()
-#    #win.close()
-#
-#
-### this section doesn t seem to be used at all
-#def present_images_with_delay_lr(stimulus_frames,scale,frame_duration,position,background_color,n_protocol,delay_duration,monitor_distance):
-#    # open screen
-#    win,trigger = OurSetup.OpenScreen(background_color,monitor_distance)
-#    trigger.Stimulus_Start()
-#    
-#    # %% generate images
-#    n_frames = stimulus_frames.shape[2]
-#    stim_size = np.array([stimulus_frames.shape[1],stimulus_frames.shape[0]]).astype('float')
-#    images = {}
-#    for frameN in range(n_frames):
-#        images[str(frameN)]=visual.ImageStim(win,stimulus_frames[:,:,frameN],size=stim_size*scale,pos=position)
-#    
-#    
-#    # protocol
-#    for k in range(n_protocol):
-#        trigger.triggger_protocol()
-#        time.sleep(0.1)
-#       
-#    n_trials = 1
-#    
-#    stim=visual.TextStim(win)
-#    countdown = 20*2
-#    for i in range(countdown):
-#        stim.text = str(countdown-i)
-#        stim.pos = [0,0]
-#        stim.draw()
-#        win.flip()
-#    
-#    # present images
-#    for ti in range(n_trials):
-#        for frameN in range(n_frames):
-#            
-#            for flipN in range(frame_duration):
-#                images[str(frameN)].draw()
-#                win.flip()
-#                if flipN == 0:
-#                    trigger.FrameTime()
-#            # after we have presented the stimulus we will wait a for the duration o delay. we have to present something for reliable frames
-#            for i in range(delay_duration):
-#                stim.text = 'delay'
-#                stim.pos = [-2000,0] # should not be visible
-#                stim.draw()
-#                win.flip()
-#    # we flip one more time to make the screen gray
-#    win.flip()
-#    stop_duration = 500
-#    for i in range(stop_duration):
-#                stim.text = 'delay'
-#                stim.pos = [-2000,0] # should not be visible
-#                stim.draw()
-#                win.flip()
-#    
-#    # %%
-#    trigger.Stimulus_Stop()
-#    #win.close()
+    # trigger.Stimulus_Stop()

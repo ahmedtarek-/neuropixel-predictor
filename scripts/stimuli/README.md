@@ -11,7 +11,6 @@ to install psychopy (according to https://www.psychopy.org/download.html)
     conda create -n "psychopy" python=3.10
     conda activate psychopy
 
-    conda install conda-forge::psychopy
+    conda install conda-forge::numpy
+    pip install psychopy
     ```
-
-- 

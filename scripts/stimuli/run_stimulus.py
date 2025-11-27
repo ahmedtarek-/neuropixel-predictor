@@ -1478,7 +1478,7 @@ for i in range(n_stimuli):
         ImageStimulus.present_images(stimulus_frames,params,setup)
         print("Time passed %d" %(time()-start) + ' seconds')
      
-print("Times past %d" %(time()-start) + ' secondes')
+print("Times past %d" %(time()-start) + ' seconds')
 win.close()
 # close trigger
 # trigger.task.close()

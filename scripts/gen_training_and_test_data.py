@@ -19,15 +19,31 @@ TEST_DATASET_PERCENTAGE = 10
 # 1. Define stimuli and firing rate files to be used
 foldername = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses'
 stimuli_file_names = [
-  '1_stimulus_cb_200_on_2023-03-15_11-05.npy',
-  '2_stimulus_sn_d_on_2023-03-15_11-05.npy',
-  '3_stimulus_sn_l_on_2023-03-15_11-05.npy',
+    '2022-12-20_15-08_1_stimulus_cb_200.npy',
+    '2022-12-20_15-08_2_stimulus_sn_dark.npy',
+    '2022-12-20_15-08_3_stimulus_sn_light.npy',
+
+    '2023-03-15_11-05_1_stimulus_cb_200.npy',
+    '2023-03-15_11-05_2_stimulus_sn_dark.npy',
+    '2023-03-15_11-05_3_stimulus_sn_light.npy',
+
+    '2023-03-15_15-23_1_stimulus_cb_200.npy',
+    '2023-03-15_15-23_2_stimulus_sn_dark.npy',
+    '2023-03-15_15-23_3_stimulus_sn_light.npy'
 ]
 
 fr_file_names = [
-  '1_fr_cb_200_on_2023-03-15_11-05.npy',
-  '2_fr_sn_d_on_2023-03-15_11-05.npy',
-  '3_fr_sn_l_on_2023-03-15_11-05.npy',
+    '2022-12-20_15-08_1_fr_cb_200.npy',
+    '2022-12-20_15-08_2_fr_sn_dark.npy',
+    '2022-12-20_15-08_3_fr_sn_light.npy',
+
+    '2023-03-15_11-05_1_fr_cb_200.npy',
+    '2023-03-15_11-05_2_fr_sn_dark.npy',
+    '2023-03-15_11-05_3_fr_sn_light.npy',
+
+    '2023-03-15_15-23_1_fr_cb_200.npy',
+    '2023-03-15_15-23_2_fr_sn_dark.npy',
+    '2023-03-15_15-23_3_fr_sn_light.npy'
 ]
 
 images_dim = np.load(os.path.join(foldername, stimuli_file_names[0])).shape
