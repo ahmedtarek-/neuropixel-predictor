@@ -18,7 +18,7 @@ class FullFactorized2d(Readout):
         outdims,
         bias,
         normalize=True,
-        init_noise=1e-3,
+        init_noise=0.5,
         constrain_pos=False,
         positive_weights=False,
         positive_spatial=False,
@@ -177,8 +177,6 @@ class FullFactorized2d(Readout):
             self._shared_features = False
 
     def forward(self, x, shift=None, **kwargs):
-        if shift is not None:
-            raise NotImplementedError("shift is not implemented for this readout")
         if self.constrain_pos:
             self.features.data.clamp_min_(0)
 
@@ -187,7 +185,7 @@ class FullFactorized2d(Readout):
         if (c_in, w_in, h_in) != (c, w, h):
             raise ValueError("the specified feature map dimension is not the readout's expected input dimension")
 
-        y = torch.einsum("ncwh,owh->nco", x, self.normalized_spatial)
+        y = torch.einsum("ncwh,owh->nco", x, self.spatial)
         y = torch.einsum("nco,oc->no", y, self.features)
         if self.bias is not None:
             y = y + self.bias

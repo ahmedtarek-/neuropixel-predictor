@@ -21,7 +21,7 @@ def generate_mei(model, data_key, neuron_idx, image_shape,
     mei = mei_method.optimize(model, data_key, neuron_idx, image_shape, steps=steps, device=device)
     return mei
 
-def plot_mei(mei_tensor, title="MEI"):
+def plot_mei(mei_tensor, title="MEI", save_folder=None):
     """
     mei_tensor: torch.Tensor with shape (1, C, H, W) or (C, H, W)
     """
@@ -43,4 +43,10 @@ def plot_mei(mei_tensor, title="MEI"):
 
     plt.title(title)
     plt.axis("off")
-    plt.show()
+
+    if save_folder:
+        filename = f"mei_{data_key}_neuron{neuron_idx:03d}.png"
+        filepath = os.path.join(save_folder, filename)
+        plt.savefig(filepath, dpi=150, bbox_inches='tight')
+        plt.show()
+        # plt.close(fig)
