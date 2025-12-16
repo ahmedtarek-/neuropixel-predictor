@@ -30,6 +30,7 @@ import os
 import numpy as np
 import pickle
 
+NP_DELAY = 50
 NP_FRQ = 30_000
 EXCLUDE_UNITS = ['Flag', 'MPW-Dendrite']
 
@@ -63,6 +64,10 @@ clean_st_aligned = [
     st for i, st in enumerate(st_aligned)
     if data['classif_from_GUI']['Classification'][i] not in EXCLUDE_UNITS
 ]
+
+# TODO: Deal with delay
+# Does subtracting 50ms from all units in clean_st_aligned make sense?
+clean_st_aligned = clean_st_aligned - 50
 
 # Calculating spike count per neuron within every frame for the stimulus
 firing_rates = []
