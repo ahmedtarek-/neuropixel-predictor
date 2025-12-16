@@ -39,7 +39,7 @@ stimulus_name = 'csd'
 
 # Loading the file
 single_unit_folder = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/data-single-unit'
-experiment_name = '2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
+experiment_name = '2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
 file_path = os.path.join(single_unit_folder, experiment_name)
 
 # Load pickle
@@ -59,15 +59,23 @@ stimulus_length = len(stimulus_ttls) - 1
 # To get spiketimes aligned
 st_aligned = data['spiketimes_aligned']
 
+# To get the cluster ids (unique and important to track)
+cluster_ids = data['classif_from_GUI']['clusterIds']
+
 # Clean all units that are in EXCLUDE_UNITS
 clean_st_aligned = [
     st for i, st in enumerate(st_aligned)
     if data['classif_from_GUI']['Classification'][i] not in EXCLUDE_UNITS
 ]
 
+clean_cluster_ids = [
+    cluster_id for i, cluster_id in enumerate(cluster_ids)
+    if data['classif_from_GUI']['Classification'][i] not in EXCLUDE_UNITS
+]
+
 # TODO: Deal with delay
 # Does subtracting 50ms from all units in clean_st_aligned make sense?
-clean_st_aligned = clean_st_aligned - 50
+clean_st_aligned = [(unit - 50) for unit in clean_st_aligned]
 
 # Calculating spike count per neuron within every frame for the stimulus
 firing_rates = []
@@ -93,14 +101,20 @@ stimulus = stimulus[:stimulus_length]
 
 # Save the data together (1 -> checkerboard, 2 -> sn dark, 3 -> sn light)
 TRAINING_DATA_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses'
-exp_date = '2023-03-15_11-05'
+exp_date = '2022-12-20_15-08'
+
 save_stim_file_name = "{}_1_stimulus_cb_200.npy".format(exp_date)
 save_fr_file_name = "{}_1_fr_cb_200.npy".format(exp_date)
+save_cluster_ids_file_name = "{}_cluster_ids.npy".format(exp_date)
+
 with open(os.path.join(TRAINING_DATA_DIR, save_stim_file_name), 'wb') as f:
     np.save(f, stimulus)
 
 with open(os.path.join(TRAINING_DATA_DIR, save_fr_file_name), 'wb') as f:
     np.save(f, fr_per_stimulus)
+
+with open(os.path.join(TRAINING_DATA_DIR, save_cluster_ids_file_name), 'wb') as f:
+    np.save(f, np.array(clean_cluster_ids))
 
 print("Created ", save_stim_file_name)
 print("Created ", save_fr_file_name)
