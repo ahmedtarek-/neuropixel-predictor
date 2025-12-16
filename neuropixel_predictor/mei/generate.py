@@ -28,6 +28,8 @@ def plot_mei(mei_tensor, title="MEI", save_folder=None):
     # Move to CPU and convert to numpy
     img = mei_tensor.detach().cpu().squeeze()
 
+    img = torch.moveaxis(img, 1, 0) # Flip the axis to have (H, W)
+
     # If single channel: shape = (H, W)
     if img.dim() == 2:
         plt.imshow(img, cmap='gray')
