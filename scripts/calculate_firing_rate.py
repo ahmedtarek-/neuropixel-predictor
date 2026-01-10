@@ -9,8 +9,9 @@ Things that needs to be changed:
     1. 'experiment_name': Single unit file.
     2. 'stimulus_name': Which stimulus to calculate FR for.
     3. 'stimulus': Path to file that contains the actual stimulus used.
-    4. 'save_stim_file_name': Name of file to save stimulus.
-    5. 'save_fr_file_name': Name of file to save firing rates
+    4. 'exp_date': experiment data to be used in file saving
+    5. 'save_stim_file_name': Name of file to save stimulus.
+    6. 'save_fr_file_name': Name of file to save firing rates
 
 
 Stimuli files processed so far:
@@ -39,7 +40,7 @@ stimulus_name = 'csd'
 
 # Loading the file
 single_unit_folder = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/data-single-unit'
-experiment_name = '2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
+experiment_name = '2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
 file_path = os.path.join(single_unit_folder, experiment_name)
 
 # Load pickle
@@ -73,9 +74,8 @@ clean_cluster_ids = [
     if data['classif_from_GUI']['Classification'][i] not in EXCLUDE_UNITS
 ]
 
-# TODO: Deal with delay
-# Does subtracting 50ms from all units in clean_st_aligned make sense?
-clean_st_aligned = [(unit - 50) for unit in clean_st_aligned]
+# Dealing with delay by subtracting 50ms from all units in clean_st_aligned.
+clean_st_aligned = [(unit - NP_DELAY) for unit in clean_st_aligned]
 
 # Calculating spike count per neuron within every frame for the stimulus
 firing_rates = []
@@ -93,15 +93,16 @@ for first_ttl, second_ttl in zip(stimulus_ttls[:-1], stimulus_ttls[1:]):
 # Shape (stimulus_length, num_of_units)
 fr_per_stimulus = np.array(firing_rates)
 
-# Putting the frames and the firing rates together (Need to match type of stimulus chosen)
+# Putting the frames and the firing rates together (Need to match type of stimulus chosen) 
+# stimulus = np.load('/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/sparse_noise_dark_36_22.npy')
 stimulus = np.load('/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/checkerboard_200.npy')
 
 # Trim the extra frames.
 stimulus = stimulus[:stimulus_length]
 
 # Save the data together (1 -> checkerboard, 2 -> sn dark, 3 -> sn light)
-TRAINING_DATA_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses'
-exp_date = '2022-12-20_15-08'
+TRAINING_DATA_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-Delay'
+exp_date = '2023-03-15_15-23'
 
 save_stim_file_name = "{}_1_stimulus_cb_200.npy".format(exp_date)
 save_fr_file_name = "{}_1_fr_cb_200.npy".format(exp_date)
@@ -118,3 +119,4 @@ with open(os.path.join(TRAINING_DATA_DIR, save_cluster_ids_file_name), 'wb') as 
 
 print("Created ", save_stim_file_name)
 print("Created ", save_fr_file_name)
+print("Created ", save_cluster_ids_file_name)

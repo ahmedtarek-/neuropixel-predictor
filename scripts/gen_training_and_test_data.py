@@ -4,9 +4,13 @@ Created on Thu Oct 02
 This script collects all data files, shuffle them, split them to training/test datasets
 and save into numpy files that are compatabile with Dataset and Dataloader formats. 
 
-- Add relevant stimuli/firing rate ti stimuli_file_names and fr_file_names.
+- Add relevant stimuli/firing rate to stimuli_file_names and fr_file_names.
 - TEST_DATASET_PERCENTAGE defines which percentage of data should be split for testing.
 
+To Change:
+    1. stimuli_file_names
+    2. fr_file_names
+    3. save_date
 
 @author: Ahmed Abdalfatah (@ahmedtarek-)
 """
@@ -17,7 +21,7 @@ import os
 TEST_DATASET_PERCENTAGE = 10
 
 # 1. Define stimuli and firing rate files to be used
-foldername = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses'
+foldername = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-Delay'
 stimuli_file_names = [
     # '2022-12-20_15-08_1_stimulus_cb_200.npy',
     # '2022-12-20_15-08_2_stimulus_sn_dark.npy',
@@ -81,7 +85,7 @@ responses, test_responses = np.split(responses, [index_to_split])
 
 
 # 6. Produce images_training, responses_training, images_test, responses_test
-save_folder = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Training'
+save_folder = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Training-Delay'
 save_date = '2023-03-15_15-23'
 
 training_images_file_path = os.path.join(save_folder, "training_images_{}.npy".format(save_date))
@@ -99,3 +103,9 @@ with open(test_images_file_path, 'wb') as f:
     np.save(f, test_images)
 with open(test_responses_file_path, 'wb') as f:
     np.save(f, test_responses)
+
+print()
+print("Created ", training_images_file_path)
+print("Created ", training_responses_file_path)
+print("Created ", test_images_file_path)
+print("Created ", test_responses_file_path)
