@@ -12,6 +12,15 @@ conda env create -f environment.yml
 conda env update --file environment.yml  --prune
 ```
 
+- Need to have Weight&Biases account to track models. Then run
+
+```bash
+# You should have API key to enter at this point
+wandb login
+```
+
+
+
 ## B. Working with data
 Firing Rate data is extracted from `data/data_single_unit/2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl`.
 
