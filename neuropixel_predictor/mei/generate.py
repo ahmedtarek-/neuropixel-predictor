@@ -1,4 +1,5 @@
 import torch
+import os
 import matplotlib.pyplot as plt
 
 from .methods import MEIMethod, MEIConfig
@@ -21,7 +22,7 @@ def generate_mei(model, data_key, neuron_idx, image_shape,
     mei = mei_method.optimize(model, data_key, neuron_idx, image_shape, steps=steps, device=device)
     return mei
 
-def plot_mei(mei_tensor, title="MEI", save_folder=None):
+def plot_mei(mei_tensor, neuron_idx, title="MEI", save_folder=None):
     """
     mei_tensor: torch.Tensor with shape (1, C, H, W) or (C, H, W)
     """
@@ -47,7 +48,7 @@ def plot_mei(mei_tensor, title="MEI", save_folder=None):
     plt.axis("off")
 
     if save_folder:
-        filename = f"mei_{data_key}_neuron{neuron_idx:03d}.png"
+        filename = f"mei_neuron{neuron_idx:03d}.png"
         filepath = os.path.join(save_folder, filename)
         plt.savefig(filepath, dpi=150, bbox_inches='tight')
         plt.show()

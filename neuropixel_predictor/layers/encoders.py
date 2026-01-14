@@ -67,7 +67,8 @@ class GeneralizedEncoderBase(Encoder):
         x = torch.stack(params)
 
         if self.elu:
-            x = F.elu(x) + 1
+            # x = F.elu(x) + 1 # Because ELU returns -1 for all -ve values
+            x = F.elu(x)
 
         # assert len(self.nonlinearity_type_list) == len(x) == len(self.nonlinearity_config_list), (
         #     "Number of non-linearities ({}), number of readout outputs ({}) and, if available, number of non-linearity configs must match. "
