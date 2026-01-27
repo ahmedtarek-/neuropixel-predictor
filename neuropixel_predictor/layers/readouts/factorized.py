@@ -26,6 +26,7 @@ class FullFactorized2d(Readout):
         mean_activity=None,
         spatial_and_feature_reg_weight=None,
         gamma_readout=None,
+        l1_regularize=False,
         **kwargs,
     ):
         """
@@ -185,10 +186,11 @@ class FullFactorized2d(Readout):
         if (c_in, w_in, h_in) != (c, w, h):
             raise ValueError("the specified feature map dimension is not the readout's expected input dimension")
 
-        y = torch.einsum("ncwh,owh->nco", x, self.spatial)
+        y = torch.einsum("ncwh,owh->nco", x, self.normalized_spatial)
         y = torch.einsum("nco,oc->no", y, self.features)
         if self.bias is not None:
             y = y + self.bias
+
         return y
 
     def __repr__(self):

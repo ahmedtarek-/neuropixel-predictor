@@ -1,10 +1,12 @@
 from functools import partial
 from warnings import warn
+from tqdm import tqdm
 
 import numpy as np
+import copy
 import torch
 import torch.nn as nn
-from tqdm import tqdm
+import wandb
 
 from ..utils import set_random_seed
 from .early_stopping import EarlyStopping
@@ -48,7 +50,8 @@ def simplified_trainer(
     early_stopping = EarlyStopping(patience=patience, maximize=False)
 
     # 4. Define history
-    history = {'train_loss': [], 'val_loss': []}
+    history = {'training_loss': [], 'val_loss': [], 'pred_std': [], 'y_std': [], 'training_corr': [], 'val_corr': []}
+    history = dict([[dk, copy.deepcopy(history)] for dk in train_loaders.keys()])
 
     # 5. Training loop
     for epoch in range(max_epochs):
@@ -77,13 +80,13 @@ def simplified_trainer(
                 # 5.1.4 Calculate loss
                 loss = model.loss_fn(predictions, responses)
                 
-                if epoch in [0, 9]:
-                    print("responses mean/min/max:", responses.mean().item(), responses.min().item(), responses.max().item())
-                    print("predictions mean/min/max:", predictions.mean().item(), predictions.min().item(), predictions.max().item())
-                    # print("response 0: ", responses[0][:10])
-                    # print("prediction 0: ", predictions[0][:10])
-                    print("-----")
-                    print("loss: ", loss)
+                # if epoch in [0, 9]:
+                #     print("responses mean/min/max:", responses.mean().item(), responses.min().item(), responses.max().item())
+                #     print("predictions mean/min/max:", predictions.mean().item(), predictions.min().item(), predictions.max().item())
+                #     # print("response 0: ", responses[0][:10])
+                #     # print("prediction 0: ", predictions[0][:10])
+                #     print("-----")
+                #     print("loss: ", loss)
                 
                 # 5.1.5 Add regularization
                 # if hasattr(model, 'regularizer'):
@@ -100,23 +103,47 @@ def simplified_trainer(
 
             # 5.2 Calculate loss for the current epoch
             epoch_train_loss = running_train_loss / len(train_loaders[data_key].dataset)
-            history['train_loss'].append(epoch_train_loss)
+            history[data_key]['training_loss'].append(epoch_train_loss)
 
             # --- Validation Phase ---
             model.eval()
             running_val_loss = 0.0
+            val_preds = []
+            val_targets = []
             with torch.no_grad():
                 for batch in val_loaders[data_key]:
                     images, responses = batch
                     images, responses = images.to(device), responses.to(device)
+                    
                     predictions = model(images, data_key=data_key)
+                    predictions = predictions.reshape([predictions.shape[0], predictions.shape[2]])
+                    predictions = torch.clamp(predictions, min=1e-6)
+                    
                     loss = loss_fn(predictions, responses)
                     running_val_loss += loss.item() * images.size(0)
+                    val_preds.append(predictions.cpu())                # 5. Append predictions and targets for statistics
+                    val_targets.append(responses.cpu())
 
             epoch_val_loss = running_val_loss / len(val_loaders[data_key].dataset)
-            history['val_loss'].append(epoch_val_loss)
 
-            print(f'Epoch {epoch+1}: Train Loss: {epoch_train_loss:.4f}, Val Loss: {epoch_val_loss:.4f}')
+            # 7. Calculate correlations
+            val_preds = torch.cat(val_preds, dim=0)
+            val_targets = torch.cat(val_targets, dim=0)
+            validation_corr = torch.corrcoef(torch.stack([val_preds.flatten(), val_targets.flatten()]))[0, 1]
+
+            # 8. Append to history
+            history[data_key]['val_loss'].append(epoch_val_loss)
+            history[data_key]['val_corr'].append(validation_corr)
+
+            wandb.log({
+                "epoch": epoch,
+                "data_key": data_key,
+                "training_loss": epoch_train_loss,
+                "validation_loss": epoch_val_loss,
+                "validation_corr": validation_corr
+            })
+
+            print(f'Epoch {epoch+1}: Train Loss: {epoch_train_loss:.4f}, Val Loss: {epoch_val_loss:.4f}, Val Corr: {validation_corr:.4f}')
 
             # --- Early Stopping Check ---
             if early_stopping(epoch_val_loss):
