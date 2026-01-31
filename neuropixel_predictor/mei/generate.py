@@ -28,7 +28,7 @@ def generate_mei(model, data_key, neuron_idx, image_shape,
     mei = mei_method.optimize(model, data_key, neuron_idx, image_shape, steps=steps, device=device)
     return mei
 
-def plot_mei(mei_tensor, neuron_idx, title="MEI", save_folder=None):
+def plot_mei(mei_tensor, neuron_idx, title="MEI", save_folder=None, ax=None):
     """
     mei_tensor: torch.Tensor with shape (1, C, H, W) or (C, H, W)
     """
@@ -38,20 +38,21 @@ def plot_mei(mei_tensor, neuron_idx, title="MEI", save_folder=None):
     img = torch.moveaxis(img, 1, 0) # Flip the axis to have (H, W)
 
     # If single channel: shape = (H, W)
-    if img.dim() == 2:
-        plt.imshow(img, cmap='gray')
+    # if img.dim() == 2:
+        # plt.imshow(img, cmap='gray')
 
-    # If multi-channel: shape = (C, H, W)
-    elif img.dim() == 3:
-        # reorder to (H, W, C)
-        img = img.permute(1, 2, 0)
-        plt.imshow(img)
+    # # If multi-channel: shape = (C, H, W)
+    # elif img.dim() == 3:
+    #     # reorder to (H, W, C)
+    #     img = img.permute(1, 2, 0)
+    #     plt.imshow(img)
 
+    if ax:
+        ax.imshow(img, cmap='gray')
+        ax.set_title(title)
     else:
-        raise ValueError(f"Unexpected image shape: {img.shape}")
-
-    plt.title(title)
-    plt.axis("off")
+        plt.title(title)
+        plt.axis("off")
 
     if save_folder:
         filename = f"mei_neuron{neuron_idx:03d}.png"
@@ -59,6 +60,35 @@ def plot_mei(mei_tensor, neuron_idx, title="MEI", save_folder=None):
         plt.savefig(filepath, dpi=150, bbox_inches='tight')
         plt.show()
         # plt.close(fig)
+
+
+def generate_meis(n_neurons_dict, steps=600):
+    device = torch.device("mps")
+    image_shape = (1, 1, IMAGE_WIDTH, IMAGE_HEIGHT)
+    
+    meis = dict([[k, []] for k in n_neurons_dict.keys()])
+    total_meis = sum(n_neurons_dict.values())
+    
+    print(f"Generating {total_meis} MEIs across {len(n_neurons_dict.keys())} data keys...")
+    
+    for data_key in n_neurons_dict.keys():
+        num_neurons = n_neurons_dict[data_key]
+
+        print(f"\nProcessing data_key: {data_key} ({num_neurons} neurons)")
+        for neuron_idx in range(num_neurons):
+            # Generate MEI
+            mei = generate_mei(
+                model,
+                data_key,
+                neuron_idx,
+                image_shape,
+                steps=steps,
+                mode='cei',
+                device=device
+            )
+            meis[data_key].append(mei)
+
+    return meis
 
 def generate_and_save_meis(n_neurons_dict, steps=600, folder_suffix=None, cluster_ids=None, title_suffix=""):
     date = datetime.now().strftime("%Y-%m-%d")

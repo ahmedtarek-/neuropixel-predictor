@@ -12,6 +12,9 @@ def generate_reconstructed_data(test_dataloaders, model):
     Yhat = dict([[k, []] for k in test_dataloaders.keys()])
     ids = dict([[k, []] for k in test_dataloaders.keys()])
 
+    model.eval()
+    device = torch.device("mps")
+
     with torch.no_grad():
         for data_key in test_dataloaders.keys():
             for x, y, ids_batch in test_dataloaders[data_key]:
@@ -170,6 +173,9 @@ def calculate_corr_stats(test_dataloaders, model):
     Yhat = dict([[k, []] for k in test_dataloaders.keys()])
     corr_coef = {}
 
+    model.eval()
+    device = torch.device("mps")
+
     # 2. Assemble Y and Yhat
     with torch.no_grad():
         for data_key in test_dataloaders.keys():
@@ -217,6 +223,9 @@ def calculate_r2_stats(test_dataloaders, model):
     Yhat = dict([[k, []] for k in test_dataloaders.keys()])
     r2 = {}
     r2_stats = {}
+
+    model.eval()
+    device = torch.device("mps")
 
     with torch.no_grad():
         for data_key in test_dataloaders.keys():
