@@ -1,5 +1,6 @@
-import numpy as np
 import os
+import torch
+import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 
@@ -16,7 +17,7 @@ def plot_all_methods_per_neuron(
     test_ids,
     reconstruction_metadata,
     meis,
-    meis_step='',
+    meis_steps='',
     run_name='',
     cluster_ids=None,
     training_neuron_stats=None,
@@ -31,7 +32,7 @@ def plot_all_methods_per_neuron(
 
         for n in range(N):
             fig, axes = plt.subplots(
-                2, 2,
+                3, 1,
                 figsize=(25, 15),
                 constrained_layout=True,
             )
@@ -44,7 +45,7 @@ def plot_all_methods_per_neuron(
                 reconstruction_metadata=reconstruction_metadata,
                 dk=dk,
                 neuron_idx=n,
-                ax=axes[0][0],
+                ax=axes[0],
                 cluster_ids=cluster_ids,
                 neuron_wise_stats=test_neuron_stats,
                 training_or_test='Test'
@@ -58,7 +59,7 @@ def plot_all_methods_per_neuron(
                 reconstruction_metadata=reconstruction_metadata,
                 dk=dk,
                 neuron_idx=n,
-                ax=axes[1][0],
+                ax=axes[1],
                 cluster_ids=cluster_ids,
                 neuron_wise_stats=training_neuron_stats,
                 training_or_test='Training'
@@ -68,8 +69,8 @@ def plot_all_methods_per_neuron(
             plot_mei(
                 meis[dk][n],
                 neuron_idx=n,
-                title=f"MEI - Neuron: {n} (#{cluster_ids[dk][n]}), Steps: {meis_step}",
-                ax=axes[0][1]
+                title=f"MEI - Neuron: {n} (#{cluster_ids[dk][n]}), Steps: {meis_steps}",
+                ax=axes[2]
             )
 
             fig.suptitle(
