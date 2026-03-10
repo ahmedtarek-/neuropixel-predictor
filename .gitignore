@@ -3,6 +3,12 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# Wandb and plots
+wandb/
+notebooks/wandb
+notebooks/meis
+plots/
+
 # C extensions
 *.so
 

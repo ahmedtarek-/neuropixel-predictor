@@ -35,12 +35,14 @@ NP_DELAY = 50
 NP_FRQ = 30_000
 EXCLUDE_UNITS = ['Flag', 'MPW-Dendrite']
 
-# Choose stimulus (ex. Sd36x22_l_3, Sl36x22_d_3, csd)
+# Choose stimulus (ex. Sd36x22_l_3, Sl36x22_d_3, csd, mb)
 stimulus_name = 'Sl36x22_d_3'
 
 # Loading the file
 single_unit_folder = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/data-single-unit'
 experiment_name = '2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
+# experiment_name = '2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
+# experiment_name = '2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
 file_path = os.path.join(single_unit_folder, experiment_name)
 
 # Load pickle
@@ -94,14 +96,15 @@ for first_ttl, second_ttl in zip(stimulus_ttls[:-1], stimulus_ttls[1:]):
 fr_per_stimulus = np.array(firing_rates)
 
 # Putting the frames and the firing rates together (Need to match type of stimulus chosen) 
-stimulus = np.load('/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/sparse_noise_light_36_22.npy')
+stimulus = np.load('/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy/sparse_noise_light_360_220.npy')
+# stimulus = np.load('/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/sparse_noise_light_36_22.npy')
 # stimulus = np.load('/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/checkerboard_200.npy')
 
 # Trim the extra frames.
 stimulus = stimulus[:stimulus_length]
 
-# Save the data together (1 -> checkerboard, 2 -> sn dark, 3 -> sn light)
-TRAINING_DATA_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-Delay'
+# Save the data together (1 -> checkerboard, 2 -> sn dark, 3 -> sn light, 4 -> mb)
+TRAINING_DATA_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-360-220'
 exp_date = '2022-12-20_15-08'
 
 save_stim_file_name = "{}_3_stimulus_sn_light.npy".format(exp_date)

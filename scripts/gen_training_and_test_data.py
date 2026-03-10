@@ -22,32 +22,40 @@ TEST_DATASET_PERCENTAGE = 10
 
 # 1. Define stimuli and firing rate files to be used
 foldername = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-Delay'
+save_folder = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Training-SparseNoise-Dark'
+save_date = '2023-03-15_15-23'
 stimuli_file_names = [
     # '2022-12-20_15-08_1_stimulus_cb_200.npy',
     # '2022-12-20_15-08_2_stimulus_sn_dark.npy',
     # '2022-12-20_15-08_3_stimulus_sn_light.npy',
+    # '2022-12-20_15-08_4_stimulus_moving_bar.npy',
 
     # '2023-03-15_11-05_1_stimulus_cb_200.npy',
     # '2023-03-15_11-05_2_stimulus_sn_dark.npy',
     # '2023-03-15_11-05_3_stimulus_sn_light.npy',
+    # '2023-03-15_11-05_4_stimulus_moving_bar.npy',
 
     # '2023-03-15_15-23_1_stimulus_cb_200.npy',
     '2023-03-15_15-23_2_stimulus_sn_dark.npy',
-    '2023-03-15_15-23_3_stimulus_sn_light.npy'
+    # '2023-03-15_15-23_3_stimulus_sn_light.npy'
+    # '2023-03-15_15-23_4_stimulus_moving_bar.npy'
 ]
 
 fr_file_names = [
     # '2022-12-20_15-08_1_fr_cb_200.npy',
     # '2022-12-20_15-08_2_fr_sn_dark.npy',
     # '2022-12-20_15-08_3_fr_sn_light.npy',
+    # '2022-12-20_15-08_4_fr_moving_bar.npy'
 
     # '2023-03-15_11-05_1_fr_cb_200.npy',
     # '2023-03-15_11-05_2_fr_sn_dark.npy',
     # '2023-03-15_11-05_3_fr_sn_light.npy',
+    # '2023-03-15_11-05_4_fr_moving_bar.npy',
 
     # '2023-03-15_15-23_1_fr_cb_200.npy',
     '2023-03-15_15-23_2_fr_sn_dark.npy',
-    '2023-03-15_15-23_3_fr_sn_light.npy'
+    # '2023-03-15_15-23_3_fr_sn_light.npy'
+    # '2023-03-15_15-23_4_fr_moving_bar.npy'
 ]
 
 images_dim = np.load(os.path.join(foldername, stimuli_file_names[0])).shape
@@ -94,9 +102,6 @@ reconstruct_data, test_reconstruct_data = np.split(reconstruct_data, [index_to_s
 
 
 # 6. Produce images_training, responses_training, images_test, responses_test
-save_folder = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Training-SparseNoise'
-save_date = '2023-03-15_15-23'
-
 training_images_file_path = os.path.join(save_folder, "training_images_{}.npy".format(save_date))
 training_responses_file_path = os.path.join(save_folder, "training_responses_{}.npy".format(save_date))
 

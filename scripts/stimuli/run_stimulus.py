@@ -5,28 +5,29 @@ Created on Thu Aug 16 08:31:45 2018
 @author: AGKremkow-europix set-up
 """
 # %%
-#import scipy.io as io
+import os
 import numpy as np
 #import OurSetup
 import our_setup_new as OurSetup
 import matplotlib.pyplot as plt
 import ImageStimulus
+import MovingBarStimulus
 # import MovingGratingStimulus
 # import MovingLocalGratingStimulus
-# import MovingBarStimulus
 # import MovingBarGridStimulus
 # import LoomingStimulus
 # import NaturalImageStimulusWithGray_CG
 
 from time import time
 import CSDStimulus    
-from scipy.signal import chirp
+# from scipy.signal import chirp
 
+STIMULI_FOLDER = "/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli"
 
 # %%# %
 start = time()
 # stimuli = ['mb','sl36x22_3','sd36x22_3','chi','mg','csd'] #['slquick'] ['slquick'] #
-stimuli = ['sl36x22_3']
+stimuli = ['mb'] # mb, sd36x22_3
 
 #['cm_36x22']#['mb_thin','sl36x22_05','sd36x22_05','sl36x22_01','sd36x22_01','chi_ultra_fast','mg','mb','sl36x22_2','sd36x22_2','sl36x22_1','sd36x22_1','chi','lo','cm_36x22','csd'] # ['slquick'] # ['mb','sl15x15_2','sd15x15_2','sl15x15_1','sd15x15_1','sl15x15_3','sd15x15_3','mg'] 
 # ['slquick', 'sdquick','mg','mb','lo','chi','Kerstin_long','Kerstin_short','slquick','sdquick',] #['slquick'] # ['Kerstin short']
@@ -684,8 +685,9 @@ for i in range(n_stimuli):
     elif stimulus_type == 'sd36x22_3':
         # load the stimulus file
         filename = 'locally_dark_sparse_noise_36_22_target_size_3_targets_per_frame_2_trials_10_background_1.0_20181120.npy'#'locally_dark_sparse_noise_36_18_target_size_2_targets_per_frame_4_trials_30_background_-0.0_20181115.npy'
+        filepath = os.path.join(STIMULI_FOLDER, filename)
         stimulus['filename'] = filename
-        stimulus_tmp = np.load('stimuli/'+filename).item()
+        stimulus_tmp = np.load(filepath, allow_pickle=True, encoding='latin1').item()
         stimulus_frames = stimulus_tmp['frames']
         background = stimulus_tmp['background']
         
@@ -1079,7 +1081,7 @@ for i in range(n_stimuli):
         print("Time passed %d" %(time()-start) + ' seconds')
 
     elif stimulus_type == 'mb': #mooving bar white or black on gray background
-        stimulus['trials'] = 15
+        stimulus['trials'] = 15 # Should be 10
         stimulus['orientations'] = np.linspace(0.,360.-(360./12.),12) # np.array([270.])#np.linspace(0.,360.-(360./12.),12)#np.linspace(0.,360.-(360./12.),12)#np.array([120.])
         stimulus['widths'] = np.array([10.])
         stimulus['length'] = 400. # 50. #400

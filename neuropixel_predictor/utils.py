@@ -2,15 +2,20 @@ import random
 import torch
 import numpy as np
 import os
+import pandas as pd
 import matplotlib.pyplot as plt
 
 TIMESERIES_SAVE_DIR = 'timeseries'
+RECEPTIVE_FIELD_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/functional-responses'
 
 def generate_reconstructed_data(test_dataloaders, model):
     # 1. Generate data per every neuron 
     Y = dict([[k, []] for k in test_dataloaders.keys()])
     Yhat = dict([[k, []] for k in test_dataloaders.keys()])
     ids = dict([[k, []] for k in test_dataloaders.keys()])
+
+    model.eval()
+    device = torch.device("mps")
 
     with torch.no_grad():
         for data_key in test_dataloaders.keys():
@@ -170,6 +175,9 @@ def calculate_corr_stats(test_dataloaders, model):
     Yhat = dict([[k, []] for k in test_dataloaders.keys()])
     corr_coef = {}
 
+    model.eval()
+    device = torch.device("mps")
+
     # 2. Assemble Y and Yhat
     with torch.no_grad():
         for data_key in test_dataloaders.keys():
@@ -218,6 +226,9 @@ def calculate_r2_stats(test_dataloaders, model):
     r2 = {}
     r2_stats = {}
 
+    model.eval()
+    device = torch.device("mps")
+
     with torch.no_grad():
         for data_key in test_dataloaders.keys():
             for x, y, id in test_dataloaders[data_key]:
@@ -252,6 +263,19 @@ def calculate_r2_stats(test_dataloaders, model):
         print("Neurons with high R²: ",  r2_stats[dk]['units_r2_gt_0.1'])
 
     return r2_stats
+
+def fetch_receptive_fields(data_key):
+    all_files = os.listdir(RECEPTIVE_FIELD_DIR)
+    pkl_files = [f for f in all_files if '.pkl' in f]
+    with_data_key = [f for f in pkl_files if data_key in f]
+
+    if not with_data_key:
+        return None
+
+    data = pd.read_pickle(os.path.join(RECEPTIVE_FIELD_DIR, with_data_key[0]))
+    data = data.reshape((1))[0]
+    only_rfs = {key: value for key, value in data.items() if key.startswith('rfs')}
+    return only_rfs
 
 def check_hyperparam_for_layers(hyperparameter, layers):
     if isinstance(hyperparameter, (list, tuple)):

@@ -16,6 +16,10 @@ import numpy as np
 from psychopy.visual.windowwarp import Warper
 # import nidaqmx      # do not use port0.0, port0.1=4, 2=8, 3=16,...
 
+WIDTH = 36
+HEIGHT = 22
+
+
 def get_default_parameters():
     header = {}
     header['folder_tmp'] = u'\\\\ONLINEANALYSIS\\exchange-folder\\onlinetmp\\'
@@ -151,10 +155,29 @@ def OpenScreen(background_color,monitor_distance,monitor_type):
     else:
         ## functionnal paragraph for the Dell screen in the neuropixel set-up
         background_color = [-1,-1,-1]
-        DellMonitor = monitors.Monitor('') # to be updated
+        DellMonitor = monitors.Monitor('NEC_20191202good_Seewiesen20200106')
+        DellMonitor.setWidth(31.0)           # physical width in cm (MEASURE THIS)
         DellMonitor.setDistance(monitor_distance)
-        win= visual.Window(monitor=DellMonitor, screen=0, waitBlanking=True) # fullscr=True, size=[1512, 982],allowGUI=False,units='deg',color=background_color)
+        DellMonitor.setSizePix([WIDTH/2, HEIGHT/2])  # pixel resolution
+
+        # ACHTUNG: Using here half of the desired size because psychopy will always use retina pixels
+        #   on macbook and therefore will double the size automatically.
+        # If you are not using mac, then maybe you should put size=[360,220] (in monitor and window!!)
+        win= visual.Window(
+            size=[WIDTH/2, HEIGHT/2],
+            fullscr=False,
+            # allowGUI=False,
+            monitor=DellMonitor,
+            screen=0,
+            waitBlanking=True,
+            units='deg',
+            color=background_color
+            ) # fullscr=True, size=[1512, 982],allowGUI=False,units='deg',color=background_color)
+        # win.winHandle.set_visible(False)
         print('dell screen options selected')
+        print(win.size)
+        print(win.frameBufferSize)
+        print('--------')
         
           
     # trigger = Trigger()

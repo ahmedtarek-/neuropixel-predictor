@@ -5,15 +5,18 @@ Created on Thu Aug 16 08:28:24 2018
 @author: AGKremkow
 """
 # %%
+import os
 from psychopy import visual
 import numpy as np
 import time
 import our_setup_new as OurSetup
 
+STIMULI_FOLDER = "/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy"
+
 # %%
 def present_images(stimulus_frames,params,setup):
      # %% we create some filenames, the tmp is used for the communication with the stimulus pc. the save for saving ... haha 
-    filename_save = OurSetup.generate_filename_and_make_folders(params)
+    # filename_save = OurSetup.generate_filename_and_make_folders(params)
     # %% Create window
     win = setup['win']
     # trigger = setup['trigger']
@@ -47,24 +50,47 @@ def present_images(stimulus_frames,params,setup):
    # %%
     
     # we save the params
-    if not params['test']:
+    # if not params['test']:
         # we save the params in the folder, always needed. Just in test maybe not
-        np.save(filename_save,params)
+        # np.save(filename_save,params)
         # we wait for the online analysis
-        if params['closed_loop_with_analysis']:
-            OurSetup.write_current_params_and_wait_for_go(params)
+        # if params['closed_loop_with_analysis']:
+            # OurSetup.write_current_params_and_wait_for_go(params)
             
     for trial in range(params['stimulus']['trials']):
         # we present some text outside the screen to get the system up and running
         OurSetup.present_pause(120,win)# in frames
         # present images
+
+        psychopy_frames = []
         for frameN in range(n_frames):
+            # psychopy_sub_frames = []
             for flipN in range(stimulus_duration_in_frames):
                 images[str(frameN)].draw()
                 win.flip()
+                
+
                 #raw_input()
-                # if flipN == 0:
+                # Append only one frame to be saved (cause that's when the TTL was triggered)
+                if flipN == 0:
+                    frame = win.getMovieFrame(buffer='front')
+                    frame_np = np.array(frame.convert('L'))
+                    psychopy_frames.append(frame_np)
                     # trigger.FrameTime()
+            
+            # if len(psychopy_frames) > 0:
+            #     psychopy_frames = np.concatenate((psychopy_frames, np.array(psychopy_sub_frames)), axis=0)
+            # else:
+            #     psychopy_frames = np.array(psychopy_sub_frames)
+        
+        # Save Psychopy frames
+        psychopy_frames = np.array(psychopy_frames)
+        print(psychopy_frames.shape)
+        file_name = f'sparse_noise_light_360_220.npy'
+        file_path = os.path.join(STIMULI_FOLDER, file_name)
+        with open(file_path, 'wb') as f:
+            np.save(f, psychopy_frames)
+
         # we flip one more time to make the screen gray
         win.flip()
         OurSetup.present_pause(360,win)# in frames

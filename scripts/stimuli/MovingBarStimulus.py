@@ -7,25 +7,28 @@ Created on Tue Jun 26 07:17:58 2018
 
 # this code presents a moving bar
 # %%
+import os
 import matplotlib.pyplot as plt
 import numpy as np
-# import scipy.io as io
 from psychopy import visual, monitors
-import OurSetup
-# import time
+import our_setup_new as OurSetup
+
+STIMULI_FOLDER = "/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy"
 
 # %%
 def run_stimulus(params,setup):
      # %% we create some filenames, the tmp is used for the communication with the stimulus pc. the save for saving ... haha 
-    filename_save = OurSetup.generate_filename_and_make_folders(params)
+    # filename_save = OurSetup.generate_filename_and_make_folders(params)
     # %% Create window
     win = setup['win']
-    trigger = setup['trigger']
+    # trigger = setup['trigger']
     background_color = params['monitor']['background']
     win.setRGB(background_color)
     win.flip()
-    #win,trigger = OurSetup.OpenScreen(background_color,monitor_distance)
-    trigger.Stimulus_Start()
+    win = OurSetup.OpenScreen(background_color, params['monitor']['distance'], params['monitor']['type'])
+
+    # win, trigger = OurSetup.OpenScreen(background_color, monitor_distance)
+    # trigger.Stimulus_Start()
     # we present background for few second such that the retina can adapt
      
     refreshrate = params['monitor']['refreshrate']
@@ -43,9 +46,7 @@ def run_stimulus(params,setup):
     
     radius_circle_deg = params['stimulus']['radius_circle'] # now in deg, this will be the circle, each bar will move from one side to the other
     
-    
     n_trials = params['stimulus']['trials']
-    
     
     
     # %%
@@ -107,7 +108,7 @@ def run_stimulus(params,setup):
     # we save the params
     if not params['test']:
         # we save the params in the folder, always needed. Just in test maybe not
-        np.save(filename_save,params)
+        # np.save(filename_save,params)
         # we wait for the online analysis
         if params['closed_loop_with_analysis']:
             OurSetup.write_current_params_and_wait_for_go(params)
@@ -115,7 +116,11 @@ def run_stimulus(params,setup):
     
     # %% looping to plot the stimulis    
     triggercount = 0
+    
+    # TODO: PUT BACK
     n_stimuli = len(all_orientations_in_deg_all_trials)
+    # all_orientations_in_deg_all_trials = [90] #* 100
+    # n_stimuli = len(all_orientations_in_deg_all_trials)
     
     
     # now we scan the parameter space
@@ -136,7 +141,7 @@ def run_stimulus(params,setup):
             tmp_ori_deg_remap = 180. + tmp_ori_deg_remap
         # dome end
         
-        print tmp_ori_deg        
+        print("Temp Orientation in Degrees: ", tmp_ori_deg)        
         
         tmp_ori_rad_remap = tmp_ori_deg_remap/360.*np.pi*2 # we need it in rad 
         
@@ -152,8 +157,8 @@ def run_stimulus(params,setup):
         local_center_x_deg = local_center_x_deg *-1 # this is for the remapping to the polar plot defaults
         local_center_y_deg = local_center_y_deg *-1
             
-        ## the following line is drawing a red circle illustrating startijng and ending points
-        line=visual.ImageStim(win,np.ones((1,1))*tmp_lum,size=(tmp_width,bar_length_deg),ori=tmp_ori_deg_remap,pos=(local_center_x_deg,local_center_y_deg),units='deg')
+        ## the following line is drawing a red circle illustrating starting and ending points
+        line = visual.ImageStim(win, np.ones((1,1))*tmp_lum, size=(tmp_width,bar_length_deg), ori=tmp_ori_deg_remap, pos=(local_center_x_deg, local_center_y_deg), units='deg')
         #line.draw()
         #stim=visual.TextStim(win,text=str(tmp_ori_deg),color=(1.0, 0.0, 0.0),bold=True,height=30.)# JK
         
@@ -166,19 +171,20 @@ def run_stimulus(params,setup):
         diameter_start_circle_deg = 2.*radius_circle_deg
         duration_in_frames = int(np.round(diameter_start_circle_deg/tmp_speed_deg_frame))
             
-        OurSetup.present_pause(80,win)
+        print("[DEBUG] Presenting 80 frames pause")
+        OurSetup.present_pause(80,win) # TODO: Pause
         
+        psychopy_frames = []
         for frameN in range(duration_in_frames):
             dx = (-np.cos(tmp_ori_rad_remap)*-1.)*tmp_speed_deg_frame
             dy = (np.sin(tmp_ori_rad_remap)*-1.)*tmp_speed_deg_frame
+            # print("[DEBUG] dx: ", dx)
+            # print("[DEBUG] dy: ", dy)
             
-            
-#            stim.draw() # JK
+            # stim.draw() # JK
             
             line.pos += (dx,dy)
             line.draw()
-            
-            
                        
             if params['test']:  
                 point1.pos += (dx,dy)
@@ -187,18 +193,38 @@ def run_stimulus(params,setup):
                 #circle.draw()
             
             win.flip()
+            # frame = win._getFrame(buffer='front')
+            frame = win.getMovieFrame(buffer='front')
+            frame_np = np.array(frame.convert('L'))
+
+            # frame_np = np.array(frame)[:, :, 0]   # take one channel (grayscale)
+
+            # print("[DEBUG] Frame: ", frameN)
+            psychopy_frames.append(frame_np)
                 
             # you have to send the trigger after a monitor flip!!!
             if frameN == 0:
-                trigger.FrameTime()
+                # trigger.FrameTime()
+                # print("[DEBUG] triggercount-n_stimuli: ", str(triggercount)+'-'+str(n_stimuli))
+                print("[DEBUG] Triggering TTL")
                 triggercount += 1
-                print(str(triggercount)+'-'+str(n_stimuli))
+        
+        # Save the psychopy frames
+        psychopy_frames = np.array(psychopy_frames)
+        print(psychopy_frames.shape)
+
+        file_name = f'moving_bar_{tmp_ori_deg}.npy'
+        file_path = os.path.join(STIMULI_FOLDER, file_name)
+        with open(file_path, 'wb') as f:
+            np.save(f, psychopy_frames)
+
         # done 
         pause_duration_frames = int(np.round(0.5*refreshrate))
+        print("[DEBUG] Presenting 60 frames pause")
         OurSetup.present_pause(pause_duration_frames,win)
     
     # %%
     pause_duration_frames = int(np.round(1.*refreshrate))
     OurSetup.present_pause(pause_duration_frames,win)
-    trigger.Stimulus_Stop()
+    # trigger.Stimulus_Stop()
     #win.close()

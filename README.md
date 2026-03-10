@@ -36,18 +36,18 @@ The available data is.
 
 The current data that was extracted, incorporated and sanity checked:
 
-- [] `Sl36x22_d`: Sparse Noise Light (on dark background) 
-- [] `Sd36x22_l`: Sparse Noise Dark  (on light background)
-- [] `csd`: Current Source Density - Checker Board (binary)
-- [] `cm_18x11`: Checkermap (with greys)
-- [] `mb`: Moving Bar
-- [] `mg_sin`: Moving Grating
-- [] `mg_sq`: Moving Grating
-- [] `chirp`
-- [] `lo`: Looming
-- [] `sg`: Static Gratings
+- [x] `Sl36x22_d`: Sparse Noise Light (on dark background) 
+- [x] `Sd36x22_l`: Sparse Noise Dark  (on light background)
+- [x] `csd`: Current Source Density - Checker Board (binary)
+- [ ] `cm_18x11`: Checkermap (with greys)
+- [ ] `mb`: Moving Bar *
+- [ ] `mg_sin`: Moving Grating *
+- [ ] `mg_sq`: Moving Grating *
+- [ ] `chirp` *
+- [ ] `lo`: Looming (not in all recordings)
+- [ ] `sg`: Static Gratings (not in all recordings)
 
-- [] `Nat_Mov` will check later
+- [ ] `Nat_Mov` will check later
 
 
 The Scripts README details which scripts have been used to generate the stimului matrices
