@@ -11,7 +11,9 @@ import numpy as np
 import time
 import our_setup_new as OurSetup
 
-STIMULI_FOLDER = "/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy"
+STIMULI_FOLDER = "/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-64x36"
+WIDTH = 64
+HEIGHT = 36
 
 # %%
 def present_images(stimulus_frames,params,setup):
@@ -86,7 +88,7 @@ def present_images(stimulus_frames,params,setup):
         # Save Psychopy frames
         psychopy_frames = np.array(psychopy_frames)
         print(psychopy_frames.shape)
-        file_name = f'sparse_noise_light_360_220.npy'
+        file_name = f'sparse_noise_dark_{WIDTH}_{HEIGHT}.npy'
         file_path = os.path.join(STIMULI_FOLDER, file_name)
         with open(file_path, 'wb') as f:
             np.save(f, psychopy_frames)

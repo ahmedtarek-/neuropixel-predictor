@@ -27,7 +27,7 @@ STIMULI_FOLDER = "/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli"
 # %%# %
 start = time()
 # stimuli = ['mb','sl36x22_3','sd36x22_3','chi','mg','csd'] #['slquick'] ['slquick'] #
-stimuli = ['mb'] # mb, sd36x22_3
+stimuli = ['sd36x22_3'] # mb, sd36x22_3
 
 #['cm_36x22']#['mb_thin','sl36x22_05','sd36x22_05','sl36x22_01','sd36x22_01','chi_ultra_fast','mg','mb','sl36x22_2','sd36x22_2','sl36x22_1','sd36x22_1','chi','lo','cm_36x22','csd'] # ['slquick'] # ['mb','sl15x15_2','sd15x15_2','sl15x15_1','sd15x15_1','sl15x15_3','sd15x15_3','mg'] 
 # ['slquick', 'sdquick','mg','mb','lo','chi','Kerstin_long','Kerstin_short','slquick','sdquick',] #['slquick'] # ['Kerstin short']
@@ -59,7 +59,7 @@ header['folder_tmp'] = u'C:\\Users\\AGKremkow\\Desktop\\Neuropixels\\onlinetmp\\
 header['folder_save'] = u'C:\\Users\\AGKremkow\\Desktop\\Neuropixels\\onlinedata\\'
 
 monitor = {}
-monitor['distance'] = 10
+monitor['distance'] = 17
 monitor['background'] = [0.,0.,0.]
 monitor['refreshrate'] = 120.
 monitor['type'] =  'Dell' #   'Dell'  #     
