@@ -36,7 +36,7 @@ NP_FRQ = 30_000
 EXCLUDE_UNITS = ['Flag', 'MPW-Dendrite']
 
 # Choose stimulus (ex. Sd36x22_l_3, Sl36x22_d_3, csd, mb)
-stimulus_name = 'Sl36x22_d_3'
+stimulus_name = 'Sd36x22_l_3'
 
 # Loading the file
 single_unit_folder = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/data-single-unit'
@@ -96,7 +96,7 @@ for first_ttl, second_ttl in zip(stimulus_ttls[:-1], stimulus_ttls[1:]):
 fr_per_stimulus = np.array(firing_rates)
 
 # Putting the frames and the firing rates together (Need to match type of stimulus chosen) 
-stimulus = np.load('/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy/sparse_noise_light_360_220.npy')
+stimulus = np.load('/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-64x36/sparse_noise_dark_64_36.npy')
 # stimulus = np.load('/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/sparse_noise_light_36_22.npy')
 # stimulus = np.load('/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/checkerboard_200.npy')
 
@@ -104,11 +104,13 @@ stimulus = np.load('/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimul
 stimulus = stimulus[:stimulus_length]
 
 # Save the data together (1 -> checkerboard, 2 -> sn dark, 3 -> sn light, 4 -> mb)
-TRAINING_DATA_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-360-220'
+TRAINING_DATA_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-64-36'
+# exp_date = '2023-03-15_11-05'
 exp_date = '2022-12-20_15-08'
+# exp_date = '2023-03-15_15-23'
 
-save_stim_file_name = "{}_3_stimulus_sn_light.npy".format(exp_date)
-save_fr_file_name = "{}_3_fr_sn_light.npy".format(exp_date)
+save_stim_file_name = "{}_2_stimulus_sn_dark.npy".format(exp_date)
+save_fr_file_name = "{}_2_fr_sn_dark.npy".format(exp_date)
 save_cluster_ids_file_name = "{}_cluster_ids.npy".format(exp_date)
 
 with open(os.path.join(TRAINING_DATA_DIR, save_stim_file_name), 'wb') as f:

@@ -21,12 +21,12 @@ import os
 TEST_DATASET_PERCENTAGE = 10
 
 # 1. Define stimuli and firing rate files to be used
-foldername = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-Delay'
-save_folder = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Training-SparseNoise-Dark'
-save_date = '2023-03-15_15-23'
+foldername = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-64-36'
+save_folder = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Training-SN-Dark-64-36'
+save_date = '2022-12-20_15-08'
 stimuli_file_names = [
     # '2022-12-20_15-08_1_stimulus_cb_200.npy',
-    # '2022-12-20_15-08_2_stimulus_sn_dark.npy',
+    '2022-12-20_15-08_2_stimulus_sn_dark.npy',
     # '2022-12-20_15-08_3_stimulus_sn_light.npy',
     # '2022-12-20_15-08_4_stimulus_moving_bar.npy',
 
@@ -36,14 +36,14 @@ stimuli_file_names = [
     # '2023-03-15_11-05_4_stimulus_moving_bar.npy',
 
     # '2023-03-15_15-23_1_stimulus_cb_200.npy',
-    '2023-03-15_15-23_2_stimulus_sn_dark.npy',
+    # '2023-03-15_15-23_2_stimulus_sn_dark.npy',
     # '2023-03-15_15-23_3_stimulus_sn_light.npy'
     # '2023-03-15_15-23_4_stimulus_moving_bar.npy'
 ]
 
 fr_file_names = [
     # '2022-12-20_15-08_1_fr_cb_200.npy',
-    # '2022-12-20_15-08_2_fr_sn_dark.npy',
+    '2022-12-20_15-08_2_fr_sn_dark.npy',
     # '2022-12-20_15-08_3_fr_sn_light.npy',
     # '2022-12-20_15-08_4_fr_moving_bar.npy'
 
@@ -53,7 +53,7 @@ fr_file_names = [
     # '2023-03-15_11-05_4_fr_moving_bar.npy',
 
     # '2023-03-15_15-23_1_fr_cb_200.npy',
-    '2023-03-15_15-23_2_fr_sn_dark.npy',
+    # '2023-03-15_15-23_2_fr_sn_dark.npy',
     # '2023-03-15_15-23_3_fr_sn_light.npy'
     # '2023-03-15_15-23_4_fr_moving_bar.npy'
 ]
