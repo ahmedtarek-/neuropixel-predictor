@@ -17,8 +17,8 @@ from psychopy.visual.windowwarp import Warper
 # import nidaqmx      # do not use port0.0, port0.1=4, 2=8, 3=16,...
 
 # The original screen was 2560x1440. So the width and height should always have same aspect ratio
-WIDTH = 64
-HEIGHT = 36
+WIDTH = 2560
+HEIGHT = 1440
 
 def get_default_parameters():
     header = {}
@@ -159,7 +159,8 @@ def OpenScreen(background_color,monitor_distance,monitor_type):
         DellMonitor = monitors.Monitor('Dell_20190626') # From original script
         DellMonitor.setWidth(31.0)                      # physical width in cm (MEASURE THIS)
         DellMonitor.setDistance(monitor_distance)
-        DellMonitor.setSizePix([WIDTH/2, HEIGHT/2])     # pixel resolution
+        DellMonitor.setSizePix([WIDTH/2, HEIGHT/2])     # pixel resolution. USE THIS IF APPLE RETINA
+        # DellMonitor.setSizePix([WIDTH, HEIGHT])       # pixel resolution. USE THIS IF NOT APPLE RETINA
 
         # ACHTUNG: Using here half of the desired size because psychopy will always use retina pixels
         #   on macbook and therefore will double the size automatically.

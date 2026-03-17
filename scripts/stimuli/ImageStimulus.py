@@ -11,9 +11,9 @@ import numpy as np
 import time
 import our_setup_new as OurSetup
 
-STIMULI_FOLDER = "/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-64x36"
-WIDTH = 64
-HEIGHT = 36
+STIMULI_FOLDER = "/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psyhcopy-2560x1440"
+WIDTH = 2560
+HEIGHT = 1440
 
 # %%
 def present_images(stimulus_frames,params,setup):

@@ -4,11 +4,14 @@ The scripts should be run in the following order to end up with data ready for t
 
 ## 1. Generate stimuli arrays
 
-### 1.1 Generate stimulu using `stimuli/run_stimulus.py`
+### 1.1 Generate stimuli using `stimuli/run_stimulus.py`
 1. Adjust size of screen to get the desired size (ex. 36x22)
-2. Change the `stimuli` variable  (ex. 'mb')
-3. Adjust the STIMULI_FOLDER in `MovingBarStimulus` (or another file)
-4. Run `python stimuli/run_stimulus.py`
+    - In `stimuli/our_setup_new`
+    - In `stimuli/ImageStimulus`, `stimuli/MovingBarStimulus` and other files
+2. Make sure to use only WIDTH and HEIGHT if not retina. Otherwise size should be halfed
+3. Change the `stimuli` variable in `stimuli/run_stimulus`  (ex. 'mb')
+4. Adjust the save folder STIMULI_FOLDER in `MovingBarStimulus` (or `ImageStimulus`)
+5. Run `python stimuli/run_stimulus.py`
 
 ### 1.2 stimulus Numpy array `gen_stim_array.py`
 
