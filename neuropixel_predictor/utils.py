@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 TIMESERIES_SAVE_DIR = 'timeseries'
 RECEPTIVE_FIELD_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/functional-responses'
 
+device_name = "cuda" if torch.cuda.is_available() else "mps"
+device = torch.device(device_name)
+
 def generate_reconstructed_data(test_dataloaders, model):
     # 1. Generate data per every neuron 
     Y = dict([[k, []] for k in test_dataloaders.keys()])
@@ -15,7 +18,6 @@ def generate_reconstructed_data(test_dataloaders, model):
     ids = dict([[k, []] for k in test_dataloaders.keys()])
 
     model.eval()
-    device = torch.device("mps")
 
     with torch.no_grad():
         for data_key in test_dataloaders.keys():
@@ -176,7 +178,6 @@ def calculate_corr_stats(test_dataloaders, model):
     corr_coef = {}
 
     model.eval()
-    device = torch.device("mps")
 
     # 2. Assemble Y and Yhat
     with torch.no_grad():
@@ -227,7 +228,6 @@ def calculate_r2_stats(test_dataloaders, model):
     r2_stats = {}
 
     model.eval()
-    device = torch.device("mps")
 
     with torch.no_grad():
         for data_key in test_dataloaders.keys():

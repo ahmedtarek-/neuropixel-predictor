@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 
 from .methods import MEIMethod, MEIConfig
 
-IMAGE_WIDTH = 36
-IMAGE_HEIGHT = 22
+IMAGE_WIDTH = 64
+IMAGE_HEIGHT = 36
 
 SAVE_DIR = 'meis'
 

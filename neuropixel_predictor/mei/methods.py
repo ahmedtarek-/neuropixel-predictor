@@ -2,6 +2,8 @@ import torch
 import torch.nn.functional as F
 from dataclasses import dataclass
 
+DEFAULT_DEVICE = "cuda" if torch.cuda.is_available() else "mps"
+
 @dataclass
 class MEIConfig:
     """Configuration for MEI optimization."""
@@ -23,7 +25,7 @@ def total_variation(x):
     tv_w = torch.abs(x[:, :, :, 1:] - x[:, :, :, :-1]).mean()
     return tv_h + tv_w
 
-def gaussian_kernel2d(sigma, device="cpu", max_kernel_size=49):
+def gaussian_kernel2d(sigma, device=DEFAULT_DEVICE, max_kernel_size=49):
     """
     Create a fixed-size 2D Gaussian kernel with sigma.
     Args:
@@ -42,7 +44,7 @@ def gaussian_kernel2d(sigma, device="cpu", max_kernel_size=49):
 
     return kernel
 
-def blur_image(img, sigma, device='cpu'):
+def blur_image(img, sigma, device=DEFAULT_DEVICE):
     """
     Blur `img` with a fixed-size Gaussian kernel.
     """
@@ -93,7 +95,7 @@ class MEIMethod:
 
         return loss + l2_reg + tv_reg
 
-    def optimize(self, model, data_key, neuron_idx, image_shape, steps, device="cuda"):
+    def optimize(self, model, data_key, neuron_idx, image_shape, steps, device=DEFAULT_DEVICE):
         """Run gradient ascent to obtain MEI."""
         # Initialize input with Gaussian noise
         image = (
