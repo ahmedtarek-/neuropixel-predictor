@@ -17,8 +17,10 @@ from psychopy.visual.windowwarp import Warper
 # import nidaqmx      # do not use port0.0, port0.1=4, 2=8, 3=16,...
 
 # The original screen was 2560x1440. So the width and height should always have same aspect ratio
-WIDTH = 2560
-HEIGHT = 1440
+WIDTH = 64 # 2560
+HEIGHT = 36 # 1440
+# WIDTH = 36
+# HEIGHT = 22
 
 def get_default_parameters():
     header = {}
@@ -35,8 +37,6 @@ def get_default_parameters():
 
     # analysis
     analysis = {}
-    
-    
 
 # %%
 # class Trigger:
@@ -157,7 +157,7 @@ def OpenScreen(background_color,monitor_distance,monitor_type):
         background_color = [-1,-1,-1]
         # DellMonitor = monitors.Monitor('NEC_20191202good_Seewiesen20200106')
         DellMonitor = monitors.Monitor('Dell_20190626') # From original script
-        DellMonitor.setWidth(31.0)                      # physical width in cm (MEASURE THIS)
+        DellMonitor.setWidth(52)                      # physical width in cm (MEASURE THIS)
         DellMonitor.setDistance(monitor_distance)
         DellMonitor.setSizePix([WIDTH/2, HEIGHT/2])     # pixel resolution. USE THIS IF APPLE RETINA
         # DellMonitor.setSizePix([WIDTH, HEIGHT])       # pixel resolution. USE THIS IF NOT APPLE RETINA

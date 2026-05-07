@@ -11,9 +11,11 @@ import numpy as np
 import time
 import our_setup_new as OurSetup
 
-STIMULI_FOLDER = "/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psyhcopy-2560x1440"
-WIDTH = 2560
-HEIGHT = 1440
+STIMULI_FOLDER = "/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-64x36-test"
+WIDTH = 64 # 2560
+HEIGHT = 36 # 1440
+# WIDTH = 36
+# HEIGHT = 22
 
 # %%
 def present_images(stimulus_frames,params,setup):
@@ -77,9 +79,10 @@ def present_images(stimulus_frames,params,setup):
                 if flipN == 0:
                     frame = win.getMovieFrame(buffer='front')
                     frame_np = np.array(frame.convert('L'))
-                    psychopy_frames.append(frame_np)
+                    vertically_flipped_frame = np.flip(frame_np, 0)
+                    psychopy_frames.append(vertically_flipped_frame)
                     # trigger.FrameTime()
-            
+
             # if len(psychopy_frames) > 0:
             #     psychopy_frames = np.concatenate((psychopy_frames, np.array(psychopy_sub_frames)), axis=0)
             # else:
@@ -92,7 +95,6 @@ def present_images(stimulus_frames,params,setup):
         file_path = os.path.join(STIMULI_FOLDER, file_name)
         with open(file_path, 'wb') as f:
             np.save(f, psychopy_frames)
-
         # we flip one more time to make the screen gray
         win.flip()
         OurSetup.present_pause(360,win)# in frames
