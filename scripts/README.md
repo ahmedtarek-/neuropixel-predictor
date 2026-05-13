@@ -2,6 +2,35 @@
 
 The scripts should be run in the following order to end up with data ready for training.
 
+## 0. Psychopy Environment
+
+To use psychopy we will create a new environment just for psychopy
+
+1. Create new env with python 10
+
+```bash
+conda create -n "psychopy" python=3.10 -y
+```
+
+2. Activate the psychopy
+
+```bash
+conda activate psychopy
+```
+
+3. Update and install wxpython
+
+```bash
+pip install --upgrade pip setuptools wheel
+conda install -c conda-forge wxpython -y
+```
+
+4. Install psychopy
+
+```bash
+pip install psychopy==2025.2.1
+```
+
 ## 1. Generate stimuli arrays
 
 ### 1.1 Generate stimuli using `stimuli/run_stimulus.py`
