@@ -10,10 +10,13 @@ from psychopy import visual
 import numpy as np
 import time
 import our_setup_new as OurSetup
+from pathlib import Path
 
-STIMULI_FOLDER = "/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-64x36-test"
-WIDTH = 64 # 2560
-HEIGHT = 36 # 1440
+ROOT = Path.cwd().parent.parent
+STIMULI_FOLDER = str((ROOT / 'data' / 'stimuli'))
+
+WIDTH = 2560 # 2560
+HEIGHT = 1440 # 1440
 # WIDTH = 36
 # HEIGHT = 22
 
@@ -77,12 +80,14 @@ def present_images(stimulus_frames,params,setup):
                 #raw_input()
                 # Append only one frame to be saved (cause that's when the TTL was triggered)
                 if flipN == 0:
-                    frame = win.getMovieFrame(buffer='front')
+                    frame = win.getMovieFrame(buffer='back')
                     frame_np = np.array(frame.convert('L'))
                     vertically_flipped_frame = np.flip(frame_np, 0)
                     psychopy_frames.append(vertically_flipped_frame)
                     # trigger.FrameTime()
 
+            if frameN > 20:
+                break
             # if len(psychopy_frames) > 0:
             #     psychopy_frames = np.concatenate((psychopy_frames, np.array(psychopy_sub_frames)), axis=0)
             # else:

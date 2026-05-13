@@ -17,8 +17,8 @@ from psychopy.visual.windowwarp import Warper
 # import nidaqmx      # do not use port0.0, port0.1=4, 2=8, 3=16,...
 
 # The original screen was 2560x1440. So the width and height should always have same aspect ratio
-WIDTH = 64 # 2560
-HEIGHT = 36 # 1440
+WIDTH = 2560 # 2560
+HEIGHT = 1440 # 1440
 # WIDTH = 36
 # HEIGHT = 22
 
@@ -157,23 +157,23 @@ def OpenScreen(background_color,monitor_distance,monitor_type):
         background_color = [-1,-1,-1]
         # DellMonitor = monitors.Monitor('NEC_20191202good_Seewiesen20200106')
         DellMonitor = monitors.Monitor('Dell_20190626') # From original script
-        DellMonitor.setWidth(52)                      # physical width in cm (MEASURE THIS)
+        DellMonitor.setWidth(61)                      # physical width in cm (MEASURE THIS)
         DellMonitor.setDistance(monitor_distance)
-        DellMonitor.setSizePix([WIDTH/2, HEIGHT/2])     # pixel resolution. USE THIS IF APPLE RETINA
-        # DellMonitor.setSizePix([WIDTH, HEIGHT])       # pixel resolution. USE THIS IF NOT APPLE RETINA
+        # DellMonitor.setSizePix([WIDTH/2, HEIGHT/2])     # pixel resolution. USE THIS IF APPLE RETINA
+        DellMonitor.setSizePix([WIDTH, HEIGHT])       # pixel resolution. USE THIS IF NOT APPLE RETINA
 
         # ACHTUNG: Using here half of the desired size because psychopy will always use retina pixels
         #   on macbook and therefore will double the size automatically.
         # If you are not using mac, then maybe you should put size=[360,220] (in monitor and window!!)
         win= visual.Window(
-            size=[WIDTH/2, HEIGHT/2],
+            size=[WIDTH, HEIGHT],
             fullscr=False,
             # allowGUI=False,
             monitor=DellMonitor,
             screen=0,
             waitBlanking=True,
             units='deg',
-            color=background_color
+            color=background_color,
             ) # fullscr=True, size=[1512, 982],allowGUI=False,units='deg',color=background_color)
         # win.winHandle.set_visible(False)
         print('dell screen options selected')

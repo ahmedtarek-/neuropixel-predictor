@@ -21,8 +21,10 @@ import MovingBarStimulus
 from time import time
 import CSDStimulus    
 # from scipy.signal import chirp
+from pathlib import Path
 
-STIMULI_FOLDER = "/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli"
+ROOT = Path.cwd().parent.parent
+STIMULI_FOLDER = str((ROOT / 'data' / 'stimuli'))
 
 # %%# %
 start = time()
