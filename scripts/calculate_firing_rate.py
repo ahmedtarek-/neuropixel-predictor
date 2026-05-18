@@ -29,24 +29,46 @@ Hints:
 
 import os
 import numpy as np
+import pandas as pd
 import pickle
 
 NP_DELAY = 50
 NP_FRQ = 30_000
 EXCLUDE_UNITS = ['Flag', 'MPW-Dendrite']
 
+MLI_THRESHOLD = 0.7 # Include only top 70% based on modulation index
+MLI_FILE = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/MLI_MB/storage_MLI_sparse_noise.npy'
+
+def mli_good_indices(experiment_name):
+    """
+    Given an experiment, returns the top MLI_THRESHOLD based on
+    modulation index of sparse noise dark.
+    """
+    mli_file = np.load(MLI_FILE, allow_pickle=True, encoding='latin1').item()
+
+    mli = mli_file[experiment_name]['Sd36x22_l_3']['local_MLI'] # Sd36x22_l_3_3
+    abs_mli = np.abs(mli)
+    indices = abs_mli.argsort()                                 # Returns indices that would sort mli ascendingly.
+
+    truncate_index = int((1 - MLI_THRESHOLD) * len(mli))        # Determine where to cut
+    good_indices = indices[truncate_index:-1].astype(np.int_)   # Cut lowest MLI_THRESHOLD and cast as int
+
+    return good_indices
+
 # Choose stimulus (ex. Sd36x22_l_3, Sl36x22_d_3, csd, mb)
 stimulus_name = 'Sd36x22_l_3'
 
 # Loading the file
 single_unit_folder = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/data-single-unit'
-experiment_name = '2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
 # experiment_name = '2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
-# experiment_name = '2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
+experiment_name = '2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
+# experiment_name = '2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
 file_path = os.path.join(single_unit_folder, experiment_name)
 
+# Modulation index good indices
+mli_good_indices = mli_good_indices(experiment_name.split('_Complete')[0])
+
 # Load pickle
-import pandas as pd
 data = pd.read_pickle(file_path)
 
 # Reshape because of weird shape
@@ -69,11 +91,13 @@ cluster_ids = data['classif_from_GUI']['clusterIds']
 clean_st_aligned = [
     st for i, st in enumerate(st_aligned)
     if data['classif_from_GUI']['Classification'][i] not in EXCLUDE_UNITS
+    and i in mli_good_indices
 ]
 
 clean_cluster_ids = [
     cluster_id for i, cluster_id in enumerate(cluster_ids)
     if data['classif_from_GUI']['Classification'][i] not in EXCLUDE_UNITS
+    and i in mli_good_indices
 ]
 
 # Dealing with delay by subtracting 50ms from all units in clean_st_aligned.
@@ -96,7 +120,9 @@ for first_ttl, second_ttl in zip(stimulus_ttls[:-1], stimulus_ttls[1:]):
 fr_per_stimulus = np.array(firing_rates)
 
 # Putting the frames and the firing rates together (Need to match type of stimulus chosen) 
-stimulus = np.load('/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-64x36/sparse_noise_dark_64_36.npy')
+stimulus = np.load('/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-36x22/sparse_noise_dark_36_22.npy')
+
+# stimulus = np.load('/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-64x36/sparse_noise_dark_64_36.npy')
 # stimulus = np.load('/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/sparse_noise_light_36_22.npy')
 # stimulus = np.load('/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/checkerboard_200.npy')
 
@@ -104,10 +130,10 @@ stimulus = np.load('/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimul
 stimulus = stimulus[:stimulus_length]
 
 # Save the data together (1 -> checkerboard, 2 -> sn dark, 3 -> sn light, 4 -> mb)
-TRAINING_DATA_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-64-36'
+TRAINING_DATA_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-36-22'
 # exp_date = '2023-03-15_11-05'
-exp_date = '2022-12-20_15-08'
-# exp_date = '2023-03-15_15-23'
+exp_date = '2023-03-15_15-23'
+# exp_date = '2022-12-20_15-08'
 
 save_stim_file_name = "{}_2_stimulus_sn_dark.npy".format(exp_date)
 save_fr_file_name = "{}_2_fr_sn_dark.npy".format(exp_date)
