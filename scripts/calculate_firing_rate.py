@@ -28,6 +28,7 @@ Hints:
 """
 
 import os
+import re
 import numpy as np
 import pandas as pd
 import pickle
@@ -52,6 +53,9 @@ def mli_good_indices(experiment_name):
     abs_mli = np.abs(mli)
     good_indices = np.where(abs_mli > MLI_THRESHOLD) # Cut lowest MLI_THRESHOLD and cast as int
 
+    print(good_indices)
+    print(abs_mli[good_indices])
+
     return set(good_indices[0])
 
 # Choose stimulus (ex. Sd36x22_l_3, Sl36x22_d_3, csd, mb)
@@ -59,15 +63,23 @@ stimulus_name = 'Sd36x22_l_3'
 
 # Loading the file
 single_unit_folder = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/data-single-unit'
-# experiment_name = '2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
+
+# Defining experiment name(s)
+experiment_name = '2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
 # experiment_name = '2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
-experiment_name = '2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
-file_path = os.path.join(single_unit_folder, experiment_name)
+# experiment_name = '2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
+
+# Defining pattern to extract right date (notice that the capture group finishes before the last two digits)
+pattern = '^([0-9\\-]+\\_[0-9]{2}\\-[0-9]{2})\\-[0-9]{2}\\_Complete.+$'
+exp_date = re.search(pattern, experiment_name).groups()[0]
+print("exp_date: ", exp_date)
+
 
 # Modulation index good indices
 mli_good_indices = mli_good_indices(experiment_name.split('_Complete')[0])
 
 # Load pickle
+file_path = os.path.join(single_unit_folder, experiment_name)
 data = pd.read_pickle(file_path)
 
 # Reshape because of weird shape
@@ -134,9 +146,6 @@ stimulus = stimulus[:stimulus_length]
 
 # Save the data together (1 -> checkerboard, 2 -> sn dark, 3 -> sn light, 4 -> mb)
 TRAINING_DATA_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-36-22'
-# exp_date = '2023-03-15_11-05'
-# exp_date = '2023-03-15_15-23'
-exp_date = '2022-12-20_15-08'
 
 save_stim_file_name = "{}_2_stimulus_sn_dark.npy".format(exp_date)
 save_fr_file_name = "{}_2_fr_sn_dark.npy".format(exp_date)
