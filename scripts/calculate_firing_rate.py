@@ -32,11 +32,13 @@ import numpy as np
 import pandas as pd
 import pickle
 
-NP_DELAY = 50
-NP_FRQ = 30_000
-EXCLUDE_UNITS = ['Flag', 'MPW-Dendrite']
 
-MLI_THRESHOLD = 0.7 # Include only top 70% based on modulation index
+NP_FRQ = 30_000
+NP_DELAY = (50 * NP_FRQ) / 1000
+
+EXCLUDE_UNITS = ['Flag', 'MPW-Dendrite', 'SU-Small', 'SU-Positive']
+
+MLI_THRESHOLD = 0.5 # Include only units with more thab 50% modulation index.
 MLI_FILE = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/MLI_MB/storage_MLI_sparse_noise.npy'
 
 def mli_good_indices(experiment_name):
@@ -48,12 +50,9 @@ def mli_good_indices(experiment_name):
 
     mli = mli_file[experiment_name]['Sd36x22_l_3']['local_MLI'] # Sd36x22_l_3_3
     abs_mli = np.abs(mli)
-    indices = abs_mli.argsort()                                 # Returns indices that would sort mli ascendingly.
+    good_indices = np.where(abs_mli > MLI_THRESHOLD) # Cut lowest MLI_THRESHOLD and cast as int
 
-    truncate_index = int((1 - MLI_THRESHOLD) * len(mli))        # Determine where to cut
-    good_indices = indices[truncate_index:-1].astype(np.int_)   # Cut lowest MLI_THRESHOLD and cast as int
-
-    return good_indices
+    return set(good_indices[0])
 
 # Choose stimulus (ex. Sd36x22_l_3, Sl36x22_d_3, csd, mb)
 stimulus_name = 'Sd36x22_l_3'
@@ -61,8 +60,8 @@ stimulus_name = 'Sd36x22_l_3'
 # Loading the file
 single_unit_folder = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/data-single-unit'
 # experiment_name = '2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
-experiment_name = '2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
-# experiment_name = '2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
+# experiment_name = '2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
+experiment_name = '2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
 file_path = os.path.join(single_unit_folder, experiment_name)
 
 # Modulation index good indices
@@ -87,21 +86,25 @@ st_aligned = data['spiketimes_aligned']
 # To get the cluster ids (unique and important to track)
 cluster_ids = data['classif_from_GUI']['clusterIds']
 
-# Clean all units that are in EXCLUDE_UNITS
+print("Number of units before cleaning: ", len(st_aligned))
+print("Number of units after cleaning: ", len(mli_good_indices))
+
+# Clean all units that are in EXCLUDE_UNITS or have Modulation index less than threshold.
 clean_st_aligned = [
     st for i, st in enumerate(st_aligned)
-    if data['classif_from_GUI']['Classification'][i] not in EXCLUDE_UNITS
-    and i in mli_good_indices
+    if i in mli_good_indices
+    and data['classif_from_GUI']['Classification'][i] not in EXCLUDE_UNITS
 ]
 
 clean_cluster_ids = [
     cluster_id for i, cluster_id in enumerate(cluster_ids)
-    if data['classif_from_GUI']['Classification'][i] not in EXCLUDE_UNITS
-    and i in mli_good_indices
+    if i in mli_good_indices
+    and data['classif_from_GUI']['Classification'][i] not in EXCLUDE_UNITS
 ]
 
-# Dealing with delay by subtracting 50ms from all units in clean_st_aligned.
+# Dealing with delay by subtracting 50ms from all units in clean_st_aligned. (Retina Delay)
 clean_st_aligned = [(unit - NP_DELAY) for unit in clean_st_aligned]
+# TODO: CHECK THE NP_DELAY!!!!
 
 # Calculating spike count per neuron within every frame for the stimulus
 firing_rates = []
@@ -109,7 +112,7 @@ for first_ttl, second_ttl in zip(stimulus_ttls[:-1], stimulus_ttls[1:]):
     ttl_fr = []
     for neuron in clean_st_aligned:
         spike_count = np.where((neuron >= first_ttl) & (neuron < second_ttl), True, False).sum()
-        # Duration: diff_in_ttl / 30000
+        # Duration: diff_in_ttl / 30_000
         # Rate: (sum/duration)
         firing_rate = (spike_count * NP_FRQ) / (second_ttl - first_ttl)
         ttl_fr.append(firing_rate)
@@ -132,8 +135,8 @@ stimulus = stimulus[:stimulus_length]
 # Save the data together (1 -> checkerboard, 2 -> sn dark, 3 -> sn light, 4 -> mb)
 TRAINING_DATA_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-36-22'
 # exp_date = '2023-03-15_11-05'
-exp_date = '2023-03-15_15-23'
-# exp_date = '2022-12-20_15-08'
+# exp_date = '2023-03-15_15-23'
+exp_date = '2022-12-20_15-08'
 
 save_stim_file_name = "{}_2_stimulus_sn_dark.npy".format(exp_date)
 save_fr_file_name = "{}_2_fr_sn_dark.npy".format(exp_date)
