@@ -50,9 +50,9 @@ stimulus_name = 'Sd36x22_l_3'
 single_unit_folder = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/data-single-unit'
 
 # Choosing experiment name(s)
-experiment_name = '2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
+# experiment_name = '2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
 # experiment_name = '2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
-# experiment_name = '2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
+experiment_name = '2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
 
 
 ######## 3. Defining helper method for modulation index based filtering ########
@@ -149,6 +149,13 @@ stimulus = np.load('/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimul
 # Trim the extra frames.
 stimulus = stimulus[:stimulus_length]
 
+# Check if stimulus is not normalized
+if stimulus.mean() > 1:
+    print("\n[Vorsicht] Stimulus is not centered around 0.")
+    print("---- Assuming the stimulus has range [0,255]")
+    print("---- Will normalize to [-1,1]")
+    stimulus = (stimulus / 127.5) - 1
+
 # Save the data together (1 -> checkerboard, 2 -> sn dark, 3 -> sn light, 4 -> mb)
 TRAINING_DATA_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-36-22'
 
@@ -165,7 +172,6 @@ with open(os.path.join(TRAINING_DATA_DIR, save_fr_file_name), 'wb') as f:
 with open(os.path.join(TRAINING_DATA_DIR, save_cluster_ids_file_name), 'wb') as f:
     np.save(f, np.array(clean_cluster_ids))
 
-print("------")
-print("Created ", save_stim_file_name)
+print("\nCreated ", save_stim_file_name)
 print("Created ", save_fr_file_name)
 print("Created ", save_cluster_ids_file_name)
