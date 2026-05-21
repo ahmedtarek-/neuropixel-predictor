@@ -21,8 +21,8 @@ import os
 TEST_DATASET_PERCENTAGE = 10
 
 # 1. Define stimuli and firing rate files to be used
-foldername = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-64-36'
-save_folder = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Training-SN-Dark-64-36'
+foldername = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-36-22'
+save_folder = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Training-SN-Dark-36-22'
 save_date = '2022-12-20_15-08'
 stimuli_file_names = [
     # '2022-12-20_15-08_1_stimulus_cb_200.npy',
@@ -85,7 +85,7 @@ for i, (stimuli_file, fr_file) in enumerate(zip(stimuli_file_names, fr_file_name
 data_length = images.shape[0]
 print("number of data points: ", data_length)
 
-shuffled_indices = np.random.permutation(data_length)
+shuffled_indices = np.random.permutation(data_length) # np.arange(data_length)
 images, responses = images[shuffled_indices], responses[shuffled_indices]
 reconstruct_data = np.array(reconstruct_data)[shuffled_indices]
 
