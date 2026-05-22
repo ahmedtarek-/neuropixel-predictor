@@ -8,9 +8,8 @@ and save into numpy files that are compatabile with Dataset and Dataloader forma
 - TEST_DATASET_PERCENTAGE defines which percentage of data should be split for testing.
 
 To Change:
-    1. stimuli_file_names
-    2. fr_file_names
-    3. save_date
+    1. stimuli_numbers
+    2. experiment_dates
 
 @author: Ahmed Abdalfatah (@ahmedtarek-)
 """
@@ -22,11 +21,11 @@ TEST_DATASET_PERCENTAGE = 10
 
 # 1. Define stimuli and firing rate files to be used
 foldername = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-36-22'
-save_folder = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Training-SN-Dark-36-22'
-save_date = '2022-12-20_15-08'
-stimuli_file_names = [
+save_folder = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Training-SN-Dark-36-22-temp'
+
+# stimuli_file_names = [
     # '2022-12-20_15-08_1_stimulus_cb_200.npy',
-    '2022-12-20_15-08_2_stimulus_sn_dark.npy',
+    # '2022-12-20_15-08_2_stimulus_sn_dark.npy',
     # '2022-12-20_15-08_3_stimulus_sn_light.npy',
     # '2022-12-20_15-08_4_stimulus_moving_bar.npy',
 
@@ -38,12 +37,63 @@ stimuli_file_names = [
     # '2023-03-15_15-23_1_stimulus_cb_200.npy',
     # '2023-03-15_15-23_2_stimulus_sn_dark.npy',
     # '2023-03-15_15-23_3_stimulus_sn_light.npy'
-    # '2023-03-15_15-23_4_stimulus_moving_bar.npy'
-]
+    # '2023-03-15_15-23_4_stimulus_moving_bar.npy',
 
-fr_file_names = [
+    # '2023-01-27_12-58_1_stimulus_cb_200.npy',
+    # '2023-01-27_12-58_2_stimulus_sn_dark.npy',
+    # '2023-01-27_12-58_3_stimulus_sn_light.np',
+    # '2023-01-27_12-58_4_stimulus_moving_bar.npy',
+
+    # '2022-12-21_13-09_1_stimulus_cb_200.npy',
+    # '2022-12-21_13-09_2_stimulus_sn_dark.npy',
+    # '2022-12-21_13-09_3_stimulus_sn_light.np',
+    # '2022-12-21_13-09_4_stimulus_moving_bar.npy',
+
+    # '2023-02-23_08-57_1_stimulus_cb_200.npy',
+    # '2023-02-23_08-57_2_stimulus_sn_dark.npy',
+    # '2023-02-23_08-57_3_stimulus_sn_light.np',
+    # '2023-02-23_08-57_4_stimulus_moving_bar.npy',
+
+    # '2023-03-16_12-16_1_stimulus_cb_200.npy',
+    # '2023-03-16_12-16_2_stimulus_sn_dark.npy',
+    # '2023-03-16_12-16_3_stimulus_sn_light.np',
+    # '2023-03-16_12-16_4_stimulus_moving_bar.npy',
+
+    # '2023-03-21_16-17_1_stimulus_cb_200.npy',
+    # '2023-03-21_16-17_2_stimulus_sn_dark.npy',
+    # '2023-03-21_16-17_3_stimulus_sn_light.np',
+    # '2023-03-21_16-17_4_stimulus_moving_bar.npy',
+
+    # '2023-03-22_12-22_1_stimulus_cb_200.npy',
+    # '2023-03-22_12-22_2_stimulus_sn_dark.npy',
+    # '2023-03-22_12-22_3_stimulus_sn_light.np',
+    # '2023-03-22_12-22_4_stimulus_moving_bar.npy',
+
+    # '2023-04-13_12-35_1_stimulus_cb_200.npy',
+    # '2023-04-13_12-35_2_stimulus_sn_dark.npy',
+    # '2023-04-13_12-35_3_stimulus_sn_light.np',
+    # '2023-04-13_12-35_4_stimulus_moving_bar.npy',
+
+    # '2023-04-14_11-48_1_stimulus_cb_200.npy',
+    # '2023-04-14_11-48_2_stimulus_sn_dark.npy',
+    # '2023-04-14_11-48_3_stimulus_sn_light.np',
+    # '2023-04-14_11-48_4_stimulus_moving_bar.npy',
+
+    # '2023-04-17_12-26_1_stimulus_cb_200.npy',
+    # '2023-04-17_12-26_2_stimulus_sn_dark.npy',
+    # '2023-04-17_12-26_3_stimulus_sn_light.np',
+    # '2023-04-17_12-26_4_stimulus_moving_bar.npy',
+
+    # '2023-04-18_12-10_1_stimulus_cb_200.npy',
+    # '2023-04-18_12-10_2_stimulus_sn_dark.npy',
+    # '2023-04-18_12-10_3_stimulus_sn_light.np',
+    # '2023-04-18_12-10_4_stimulus_moving_bar.npy',
+
+# ]
+
+# fr_file_names = [
     # '2022-12-20_15-08_1_fr_cb_200.npy',
-    '2022-12-20_15-08_2_fr_sn_dark.npy',
+    # '2022-12-20_15-08_2_fr_sn_dark.npy',
     # '2022-12-20_15-08_3_fr_sn_light.npy',
     # '2022-12-20_15-08_4_fr_moving_bar.npy'
 
@@ -55,81 +105,172 @@ fr_file_names = [
     # '2023-03-15_15-23_1_fr_cb_200.npy',
     # '2023-03-15_15-23_2_fr_sn_dark.npy',
     # '2023-03-15_15-23_3_fr_sn_light.npy'
-    # '2023-03-15_15-23_4_fr_moving_bar.npy'
+    # '2023-03-15_15-23_4_fr_moving_bar.npy',
+
+    # '2023-01-27_12-58_1_fr_cb_200.npy',
+    # '2023-01-27_12-58_2_fr_sn_dark.npy',
+    # '2023-01-27_12-58_3_fr_sn_light.npy',
+    # '2023-01-27_12-58_4_fr_moving_bar.npy',
+
+    # '2022-12-21_13-09_1_fr_cb_200.npy',
+    # '2022-12-21_13-09_2_fr_sn_dark.npy',
+    # '2022-12-21_13-09_3_fr_sn_light.npy',
+    # '2022-12-21_13-09_4_fr_moving_bar.npy',
+
+    # '2023-02-23_08-57_1_fr_cb_200.npy',
+    # '2023-02-23_08-57_2_fr_sn_dark.npy',
+    # '2023-02-23_08-57_3_fr_sn_light.npy',
+    # '2023-02-23_08-57_4_fr_moving_bar.npy',
+
+    # '2023-03-16_12-16_1_fr_cb_200.npy',
+    # '2023-03-16_12-16_2_fr_sn_dark.npy',
+    # '2023-03-16_12-16_3_fr_sn_light.npy',
+    # '2023-03-16_12-16_4_fr_moving_bar.npy',
+
+    # '2023-03-21_16-17_1_fr_cb_200.npy',
+    # '2023-03-21_16-17_2_fr_sn_dark.npy',
+    # '2023-03-21_16-17_3_fr_sn_light.npy',
+    # '2023-03-21_16-17_4_fr_moving_bar.npy',
+
+    # '2023-03-22_12-22_1_fr_cb_200.npy',
+    # '2023-03-22_12-22_2_fr_sn_dark.npy',
+    # '2023-03-22_12-22_3_fr_sn_light.npy',
+    # '2023-03-22_12-22_4_fr_moving_bar.npy',
+
+    # '2023-04-13_12-35_1_fr_cb_200.npy',
+    # '2023-04-13_12-35_2_fr_sn_dark.npy',
+    # '2023-04-13_12-35_3_fr_sn_light.npy',
+    # '2023-04-13_12-35_4_fr_moving_bar.npy',
+
+    # '2023-04-14_11-48_1_fr_cb_200.npy',
+    # '2023-04-14_11-48_2_fr_sn_dark.npy',
+    # '2023-04-14_11-48_3_fr_sn_light.npy',
+    # '2023-04-14_11-48_4_fr_moving_bar.npy',
+
+    # '2023-04-17_12-26_1_fr_cb_200.npy',
+    # '2023-04-17_12-26_2_fr_sn_dark.npy',
+    # '2023-04-17_12-26_3_fr_sn_light.npy',
+    # '2023-04-17_12-26_4_fr_moving_bar.npy',
+
+    # '2023-04-18_12-10_1_fr_cb_200.npy',
+    # '2023-04-18_12-10_2_fr_sn_dark.npy',
+    # '2023-04-18_12-10_3_fr_sn_light.npy',
+    # '2023-04-18_12-10_4_fr_moving_bar.npy'
+
+# ]
+
+stimuli_suffixes = {
+    1: "cb_200.npy",
+    2: "sn_dark.npy",
+    3: "sn_light.npy",
+    4: "moving_bar.npy",
+}
+
+def gen_training_and_test_data(experiment_date, stimulus_numbers):
+    # Prepare stimuli and firing rates files
+    stimuli_file_names = [f"{experiment_date}_{stim_num}_stimulus_{stimuli_suffixes[stim_num]}" for stim_num in stimulus_numbers]
+    fr_file_names = [f"{experiment_date}_{stim_num}_fr_{stimuli_suffixes[stim_num]}" for stim_num in stimulus_numbers]
+
+    images_dim = np.load(os.path.join(foldername, stimuli_file_names[0])).shape
+    responses_dim = np.load(os.path.join(foldername, fr_file_names[0])).shape
+
+    print(stimuli_file_names)
+    print(fr_file_names)
+    print("images_dim: ", images_dim)
+    print("responses_dim: ", responses_dim)
+
+    # 2. Load all images and concatenate into two lists
+    images = np.empty([0, images_dim[1], images_dim[2]])
+    responses = np.empty([0, responses_dim[1]])
+    reconstruct_meta_data = {}
+    reconstruct_data = []
+    for i, (stimuli_file, fr_file) in enumerate(zip(stimuli_file_names, fr_file_names)):
+        # 2.1 Load the images
+        loaded_images = np.load(os.path.join(foldername, stimuli_file))
+        loaded_responses = np.load(os.path.join(foldername, fr_file))
+
+        # 2.2 Concat images and responses
+        images = np.concat((images, loaded_images), axis=0)
+        responses = np.concat((responses, loaded_responses), axis=0)
+
+        # 2.3 Concat data used for reconstruction
+        stimulus_length = loaded_images.shape[0]
+        reconstruct_meta_data[f"st{i}"] = '_'.join(fr_file.split('_fr_')).replace('.npy', '')
+        reconstruct_data += [f"st{i}_{k}" for k in list(range(stimulus_length))]
+
+    # 3. Shuffle the images/responses and take a sample for test data.
+    data_length = images.shape[0]
+    print("number of data points: ", data_length)
+
+    shuffled_indices = np.random.permutation(data_length) # np.arange(data_length)
+    images, responses = images[shuffled_indices], responses[shuffled_indices]
+    reconstruct_data = np.array(reconstruct_data)[shuffled_indices]
+
+    # 4. Reshape to get the right shape
+    images = images.reshape(data_length, 1, images_dim[1], images_dim[2])
+
+    # 5. Take 10% of data for testing
+    # Note that np.split needs to take the index_to_split between brackets, otherwise
+    #   it divides the array equally to n parts. Check docs.
+    index_to_split = data_length - int(data_length/TEST_DATASET_PERCENTAGE)
+    images, test_images = np.split(images, [index_to_split])
+    responses, test_responses = np.split(responses, [index_to_split])
+    reconstruct_data, test_reconstruct_data = np.split(reconstruct_data, [index_to_split])
+
+
+    # 6. Produce images_training, responses_training, images_test, responses_test
+    training_images_file_path = os.path.join(save_folder, "training_images_{}.npy".format(experiment_date))
+    training_responses_file_path = os.path.join(save_folder, "training_responses_{}.npy".format(experiment_date))
+
+    test_images_file_path = os.path.join(save_folder, "test_images_{}.npy".format(experiment_date))
+    test_responses_file_path = os.path.join(save_folder, "test_responses_{}.npy".format(experiment_date))
+
+    training_reconstruct_file_path = os.path.join(save_folder, "training_reconstruct_{}.npy".format(experiment_date))
+    test_reconstruct_file_path = os.path.join(save_folder, "test_reconstruct_{}.npy".format(experiment_date))
+
+    with open(training_images_file_path, 'wb') as f:
+        np.save(f, images)
+    with open(training_responses_file_path, 'wb') as f:
+        np.save(f, responses)
+
+    with open(test_images_file_path, 'wb') as f:
+        np.save(f, test_images)
+    with open(test_responses_file_path, 'wb') as f:
+        np.save(f, test_responses)
+
+    with open(training_reconstruct_file_path, 'wb') as f:
+        np.save(f, {'meta': reconstruct_meta_data, 'ids': reconstruct_data}, allow_pickle=True)
+    with open(test_reconstruct_file_path, 'wb') as f:
+        np.save(f, {'meta': reconstruct_meta_data, 'ids': test_reconstruct_data}, allow_pickle=True)
+
+    print()
+    print("Created ", training_images_file_path)
+    print("Created ", training_responses_file_path)
+    print("Created ", test_images_file_path)
+    print("Created ", test_responses_file_path)
+    print("Created ", training_reconstruct_file_path)
+    print("Created ", test_reconstruct_file_path)
+
+
+experiment_dates = [
+    "2022-12-20_15-08",
+    "2023-03-15_11-05",
+    "2023-03-15_15-23",
+    "2023-01-27_12-58",
+    "2022-12-21_13-09",
+    "2023-02-23_08-57",
+    "2023-03-16_12-16",
+    "2023-03-21_16-17",
+    "2023-03-22_12-22",
+    "2023-04-13_12-35",
+    "2023-04-14_11-48",
+    "2023-04-17_12-26",
+    "2023-04-18_12-10",
 ]
 
-images_dim = np.load(os.path.join(foldername, stimuli_file_names[0])).shape
-responses_dim = np.load(os.path.join(foldername, fr_file_names[0])).shape
+# Sparse noise dark
+stimuli_numbers = [2]
 
-print("images_dim: ", images_dim)
-print("responses_dim: ", responses_dim)
-
-# 2. Load all images and concatenate into two lists
-images = np.empty([0, images_dim[1], images_dim[2]])
-responses = np.empty([0, responses_dim[1]])
-reconstruct_meta_data = {}
-reconstruct_data = []
-for i, (stimuli_file, fr_file) in enumerate(zip(stimuli_file_names, fr_file_names)):
-    # 2.1 Load the images
-    loaded_images = np.load(os.path.join(foldername, stimuli_file))
-    loaded_responses = np.load(os.path.join(foldername, fr_file))
-    # 2.2 Concat images and responses
-    images = np.concat((images, loaded_images), axis=0)
-    responses = np.concat((responses, loaded_responses), axis=0)
-    # 2.3 Concat data used for reconstruction
-    stimulus_length = loaded_images.shape[0]
-    reconstruct_meta_data[f"st{i}"] = '_'.join(fr_file.split('_fr_')).replace('.npy', '')
-    reconstruct_data += [f"st{i}_{k}" for k in list(range(stimulus_length))]
-
-# 3. Shuffle the images/responses and take a sample for test data.
-data_length = images.shape[0]
-print("number of data points: ", data_length)
-
-shuffled_indices = np.random.permutation(data_length) # np.arange(data_length)
-images, responses = images[shuffled_indices], responses[shuffled_indices]
-reconstruct_data = np.array(reconstruct_data)[shuffled_indices]
-
-# 4. Reshape to get the right shape
-images = images.reshape(data_length, 1, images_dim[1], images_dim[2])
-
-# 5. Take 10% of data for testing
-# Note that np.split needs to take the index_to_split between brackets, otherwise
-#   it divides the array equally to n parts. Check docs.
-index_to_split = data_length - int(data_length/TEST_DATASET_PERCENTAGE)
-images, test_images = np.split(images, [index_to_split])
-responses, test_responses = np.split(responses, [index_to_split])
-reconstruct_data, test_reconstruct_data = np.split(reconstruct_data, [index_to_split])
-
-
-# 6. Produce images_training, responses_training, images_test, responses_test
-training_images_file_path = os.path.join(save_folder, "training_images_{}.npy".format(save_date))
-training_responses_file_path = os.path.join(save_folder, "training_responses_{}.npy".format(save_date))
-
-test_images_file_path = os.path.join(save_folder, "test_images_{}.npy".format(save_date))
-test_responses_file_path = os.path.join(save_folder, "test_responses_{}.npy".format(save_date))
-
-training_reconstruct_file_path = os.path.join(save_folder, "training_reconstruct_{}.npy".format(save_date))
-test_reconstruct_file_path = os.path.join(save_folder, "test_reconstruct_{}.npy".format(save_date))
-
-with open(training_images_file_path, 'wb') as f:
-    np.save(f, images)
-with open(training_responses_file_path, 'wb') as f:
-    np.save(f, responses)
-
-with open(test_images_file_path, 'wb') as f:
-    np.save(f, test_images)
-with open(test_responses_file_path, 'wb') as f:
-    np.save(f, test_responses)
-
-with open(training_reconstruct_file_path, 'wb') as f:
-    np.save(f, {'meta': reconstruct_meta_data, 'ids': reconstruct_data}, allow_pickle=True)
-with open(test_reconstruct_file_path, 'wb') as f:
-    np.save(f, {'meta': reconstruct_meta_data, 'ids': test_reconstruct_data}, allow_pickle=True)
-
-print()
-print("Created ", training_images_file_path)
-print("Created ", training_responses_file_path)
-print("Created ", test_images_file_path)
-print("Created ", test_responses_file_path)
-print("Created ", training_reconstruct_file_path)
-print("Created ", test_reconstruct_file_path)
+# stimulus_number: (1 -> checkerboard, 2 -> sn dark, 3 -> sn light, 4 -> mb)
+for experiment_date in experiment_dates:
+    gen_training_and_test_data(experiment_date, stimuli_numbers)
