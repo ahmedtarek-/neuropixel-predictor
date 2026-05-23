@@ -5,12 +5,11 @@ Removes the units that are 'Flags' or 'Dendrites' (based on manual classificatio
 {'MPW-Dendrite', 'Flag', 'MPW-Axon', 'SU-Regular', 'SU-Small', 'SU-Fast'}
 
 Things that needs to be changed:
-    1. 'experiment_name': Single unit file.
-    2. 'stimulus_name': Which stimulus to calculate FR for.
+    1. 'experiment_names': Single unit file.
+    2. 'STIMULUS_NAME': Which stimulus to calculate FR for.
     3. 'stimulus': Path to file that contains the actual stimulus used.
-    4. 'exp_date': experiment data to be used in file saving
-    5. 'save_stim_file_name': Name of file to save stimulus.
-    6. 'save_fr_file_name': Name of file to save firing rates
+    4. 'save_stim_file_name': Name of file to save stimulus.
+    5. 'save_fr_file_name': Name of file to save firing rates
 
 Hints:
     - `data["stim_params_files"]["mb"]["stimulus"]["sequence"]["orientations"]`
@@ -23,185 +22,246 @@ Hints:
 """
 
 import os
+import re
 import numpy as np
 import pandas as pd
 
 
-########### 1. Define variables and data location ###########
+########### A. Define variables and data location ###########
 DATA_FOLDER = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data'
-PSYCHOPY_STIMULI = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy'
+
+PSYCHOPY_STIMULI = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-36x22'
 TRAINING_DATA_SAVE_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-Delay'
 
-VALIDATION_PLOT = True
+SINGLE_UNIT_FOLDER = os.path.join(DATA_FOLDER, 'data-single-unit')
+STIM_PARAMS_FOLDER = os.path.join(DATA_FOLDER, 'Stimuli-Params')
 
-NP_DELAY = 50
+MLI_THRESHOLD = 0.5 # Include only units with more thab 50% modulation index.
+MLI_FILE = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/MLI_MB/storage_MLI_sparse_noise.npy'
+
+
 NP_FRQ = 30_000
+NP_DELAY = (50 * NP_FRQ) / 1000
 
 NUM_FRAMES = 192
 FRAME_SPAN = (1/120) * NP_FRQ
 
-EXCLUDE_UNITS = ['Flag', 'MPW-Dendrite']
+EXCLUDE_UNITS = ['Flag', 'MPW-Dendrite', 'SU-Small', 'SU-Positive']
 
-# Dates: 2022-12-20_15-08-10, 2023-03-15_11-05-00, 2023-03-15_15-23-14
-experiment_date = '2023-03-15_15-23-14'
-experiment_tag = experiment_date[:-3]
 
+######## B. Choosing stimuli  ########
 # Choose stimulus (ex. mb, mg)
-stimulus_name = 'mb'
+STIMULUS_NAME = 'mb'
 
 # Define stimuli_params_key
 stimuli_params_keys = {
-  '2022-12-20_15-08-10': '20221220/c11emb_params.npy',
-  '2023-03-15_11-05-00': '20230315bis/c11cmb_params.npy',
-  '2023-03-15_15-23-14': '20230315/c11cmb_params.npy',
+  '2022-12-20_15-08': '20221220/c11emb_params.npy',
+  '2023-03-15_11-05': '20230315bis/c11cmb_params.npy',
+  '2023-03-15_15-23': '20230315/c11cmb_params.npy',
 }
 
-# func_resp_folder = os.path.join(DATA_FOLDER, 'functional-responses')
-# func_resp_file = f"functional_responses_{experiment_date}_l.pkl"
-# func_resp_file = os.path.join(func_resp_folder, func_resp_file)
+######## C. Defining helper method for modulation index based filtering ########
+class MLINotFound(Exception):
+    pass
 
-# Loading the file
-single_unit_folder = os.path.join(DATA_FOLDER, 'data-single-unit')
-stim_params_folder = os.path.join(DATA_FOLDER, 'Stimuli-Params')
+def fetch_mli_good_indices(experiment_name):
+    """
+    Given an experiment, returns the top MLI_THRESHOLD based on
+    modulation index of sparse noise dark.
+    """
+    mli_file = np.load(MLI_FILE, allow_pickle=True, encoding='latin1').item()
+
+    if experiment_name not in mli_file.keys():
+        raise MLINotFound("No MLI entry found for this experiment")
+
+    mli = mli_file[experiment_name]['Sd36x22_l_3']['local_MLI'] # Sd36x22_l_3_3
+    abs_mli = np.abs(mli)
+    good_indices = np.where(abs_mli > MLI_THRESHOLD) # Cut lowest MLI_THRESHOLD and cast as int
+
+    return set(good_indices[0])
+
+######## D. Defining main firing rates calculation ########
+def calculate_firing_rate_mb(experiment_name, validation_plot=False):
+    ######## 1. Extracting experiment date and reading data ########
+
+    # Defining pattern to extract right date (notice that the capture group finishes before the last two digits)
+    pattern = '^([0-9\\-]+\\_[0-9]{2}\\-[0-9]{2})\\-[0-9]{2}\\_Complete.+$'
+    experiment_date = re.search(pattern, experiment_name).groups()[0]
+    
+    print("\n=====================")
+    print("Processing Experiment -> exp_date: ", experiment_date)
 
 
-single_unit_file = f"{experiment_date}_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl"
-stim_params_file = stimuli_params_keys[experiment_date]
+    stim_params_file = stimuli_params_keys[experiment_date]
+    single_unit_file = os.path.join(SINGLE_UNIT_FOLDER, experiment_name)
+    stim_params_file = os.path.join(STIM_PARAMS_FOLDER, stim_params_file)
 
-single_unit_file = os.path.join(single_unit_folder, single_unit_file)
-stim_params_file = os.path.join(stim_params_folder, stim_params_file)
+    ######## D. Main firing rate calculation ########
+    # Load pickle
+    data = pd.read_pickle(single_unit_file)
 
-########### 2. Prepare data to calculate FR ###########
-# Load pickle
-data = pd.read_pickle(single_unit_file)
+    stim_params = np.load(stim_params_file, allow_pickle=True, encoding='latin1').item()
 
-stim_params = np.load(stim_params_file, allow_pickle=True, encoding='latin1').item()
+    # Reshape because of weird shape
+    data = data.reshape((1))[0]
 
-# Reshape because of weird shape
-data = data.reshape((1))[0]
+    # To get which stimulius are there
+    # data['events'].keys()
+    stimulus_ttls = data['events'][STIMULUS_NAME]
 
-# To get which stimulius are there
-# data['events'].keys()
-stimulus_ttls = data['events'][stimulus_name]
+    
+    # Stimulus Length
+    stimulus_length = len(stimulus_ttls)
 
-# Stimulus Length
-stimulus_length = len(stimulus_ttls)
+    # To get spiketimes aligned
+    st_aligned = data['spiketimes_aligned']
 
-# To get spiketimes aligned
-st_aligned = data['spiketimes_aligned']
+    # To get the cluster ids (unique and important to track)
+    cluster_ids = data['classif_from_GUI']['clusterIds']
 
-# To get the cluster ids (unique and important to track)
-cluster_ids = data['classif_from_GUI']['clusterIds']
+    # Modulation index good indices
+    try:
+        mli_good_indices = fetch_mli_good_indices(experiment_name.split('_Complete')[0])
+    except MLINotFound as e:
+        # Set mli_good_indices to all indices
+        print(e)
+        mli_good_indices = np.arange(len(st_aligned))
 
-# Clean all units that are in EXCLUDE_UNITS
-clean_st_aligned = [
-    st for i, st in enumerate(st_aligned)
-    if data['classif_from_GUI']['Classification'][i] not in EXCLUDE_UNITS
+    print("Number of units before cleaning: ", len(st_aligned))
+    print("Number of units after MLI cleaning: ", len(mli_good_indices))
+
+    ######## 2. Cleaning Data ########
+
+    # Clean all units that are in EXCLUDE_UNITS or have Modulation index less than threshold.
+    clean_st_aligned = [
+        st for i, st in enumerate(st_aligned)
+        if i in mli_good_indices
+        and data['classif_from_GUI']['Classification'][i] not in EXCLUDE_UNITS
+    ]
+
+    clean_cluster_ids = [
+        cluster_id for i, cluster_id in enumerate(cluster_ids)
+        if i in mli_good_indices
+        and data['classif_from_GUI']['Classification'][i] not in EXCLUDE_UNITS
+    ]
+    print("Number of units after MLI + classif_from_GUI cleaning: ", len(clean_cluster_ids))
+
+
+    # Dealing with delay by subtracting 50ms from all units in clean_st_aligned.
+    clean_st_aligned = [(unit - NP_DELAY) for unit in clean_st_aligned]
+
+    ########### 3. Calculate FR ###########
+    # Calculating spike count per neuron within every frame for the stimulus
+    print(f"---- Calculating firing rates for stimulus ({STIMULUS_NAME}) in experiment ({experiment_date}) ")
+    firing_rates = []
+    for ttl in stimulus_ttls:
+        # We have 192 frames starting the firing of the ttls
+        # 192 frames -> 1.6 seconds
+        # Timespan of 192 frames = 1.6 * 30_000 (NP_FRQ) = 48_000
+        # Timespan of 1 frame = 250
+        # We calculate average firing rate per frame (250)
+        orientations_frs = []
+        for i in range(NUM_FRAMES):
+            lower_bound = ttl + (i * FRAME_SPAN)
+            upper_bound = ttl + ((i+1) * FRAME_SPAN)
+            # print("lower_bound: ", lower_bound)
+            # print("upper_bound: ", upper_bound)
+            # print("\n")
+            neuron_frs = []
+            for neuron in clean_st_aligned:
+                spike_count = np.where((neuron >= lower_bound) & (neuron < upper_bound), True, False).sum()
+                # Duration: diff_in_ttl / 30000
+                # Rate: (sum/duration)
+                firing_rate = (spike_count * NP_FRQ) / (upper_bound - lower_bound)
+                # if spike_count > 0:
+                    # print("spike_count: ", spike_count)
+                    # print("firing_rate: ", firing_rate)
+                    # print("(upper_bound - lower_bound): ", (upper_bound - lower_bound))
+                    # print("\n")
+                neuron_frs.append(firing_rate)
+            orientations_frs.append(neuron_frs)
+        firing_rates.append(orientations_frs)
+
+    # Shape (stimulus_length, NUM_FRAMES, num_of_units)
+    fr_per_stimulus = np.array(firing_rates)
+
+    ########### 4. Loading the stimulus ###########
+    # Putting the frames and the firing rates together (Need to match type of stimulus chosen)
+    stim_params = np.load(stim_params_file, allow_pickle=True, encoding='latin1').item()
+    orientations = stim_params['stimulus']['sequence']['orientations']
+
+    # Append all stimuli files together
+    stimulus = []
+    for orientation in orientations:
+      stim_file = f"moving_bar_{orientation}.npy"
+      stim_path = os.path.join(PSYCHOPY_STIMULI, stim_file)
+      stimulus.append(np.load(stim_path))
+
+    # Shape (stimulus_length, NUM_FRAMES, HEIGHT, WIDTH)
+    stimulus = np.array(stimulus)
+
+    ########### 5. Reshape and Save ###########
+    # (stimulus_length * NUM_FRAMES, num_of_units)
+    fr_per_stimulus = fr_per_stimulus.reshape((stimulus_length * NUM_FRAMES, fr_per_stimulus.shape[-1]))
+
+    # (stimulus_length * NUM_FRAMES, WIDTH, HEIGHT)
+    stimulus = stimulus.reshape((stimulus_length * NUM_FRAMES, stimulus.shape[-1], stimulus.shape[-2]))
+
+    print("Firing Rates Shape: ", fr_per_stimulus)
+    print("Stimulus Shape: ", stimulus)
+
+    # Save the data together (4 -> moving_bar, 5 -> moving_grating)
+
+    with open(os.path.join(TRAINING_DATA_SAVE_DIR, save_stim_file_name), 'wb') as f:
+        np.save(f, stimulus)
+
+    with open(os.path.join(TRAINING_DATA_SAVE_DIR, save_fr_file_name), 'wb') as f:
+        np.save(f, fr_per_stimulus)
+
+    with open(os.path.join(TRAINING_DATA_SAVE_DIR, save_cluster_ids_file_name), 'wb') as f:
+        np.save(f, np.array(clean_cluster_ids))
+
+    print("Created ", save_stim_file_name)
+    print("Created ", save_fr_file_name)
+    print("Created ", save_cluster_ids_file_name)
+
+
+    ########### 6. Plot for validation ###########
+    if validation_plot:
+        import matplotlib.pyplot as plt
+
+        # firing_rates shape: (T, N)
+        T, N = fr_per_stimulus.shape
+        units = np.random.choice(N, 3, replace=False)
+
+        fig, axs = plt.subplots(3, 1, figsize=(10, 6), sharex=True)
+
+        for ax, u in zip(axs, units):
+            ax.plot(fr_per_stimulus[:, u])
+            ax.set_title(f"Unit {u}")
+            ax.set_ylabel("Firing rate")
+
+        axs[-1].set_xlabel("Time")
+
+        plt.tight_layout()
+        plt.show()
+
+experiment_names = [
+    # "2023-01-27_12-58-44_Complete_spiketime_Header_TTLs_withdrops_n_withGUIclassif.pkl",
+    "2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    "2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    "2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2022-12-21_13-09-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-02-23_08-57-20_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-03-16_12-16-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-03-21_16-17-18_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-03-22_12-22-12_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-04-13_12-35-02_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-04-14_11-48-04_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-04-17_12-26-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-04-18_12-10-34_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
 ]
 
-clean_cluster_ids = [
-    cluster_id for i, cluster_id in enumerate(cluster_ids)
-    if data['classif_from_GUI']['Classification'][i] not in EXCLUDE_UNITS
-]
 
-# Dealing with delay by subtracting 50ms from all units in clean_st_aligned.
-clean_st_aligned = [(unit - NP_DELAY) for unit in clean_st_aligned]
-
-########### 3. Calculate FR ###########
-# Calculating spike count per neuron within every frame for the stimulus
-print(f"---- Calculating firing rates for stimulus ({stimulus_name}) in experiment ({experiment_date}) ")
-firing_rates = []
-for ttl in stimulus_ttls:
-    # We have 192 frames starting the firing of the ttls
-    # 192 frames -> 1.6 seconds
-    # Timespan of 192 frames = 1.6 * 30_000 (NP_FRQ) = 48_000
-    # Timespan of 1 frame = 250
-    # We calculate average firing rate per frame (250)
-    orientations_frs = []
-    for i in range(NUM_FRAMES):
-        lower_bound = ttl + (i * FRAME_SPAN)
-        upper_bound = ttl + ((i+1) * FRAME_SPAN)
-        # print("lower_bound: ", lower_bound)
-        # print("upper_bound: ", upper_bound)
-        # print("\n")
-        neuron_frs = []
-        for neuron in clean_st_aligned:
-            spike_count = np.where((neuron >= lower_bound) & (neuron < upper_bound), True, False).sum()
-            # Duration: diff_in_ttl / 30000
-            # Rate: (sum/duration)
-            firing_rate = (spike_count * NP_FRQ) / (upper_bound - lower_bound)
-            # if spike_count > 0:
-                # print("spike_count: ", spike_count)
-                # print("firing_rate: ", firing_rate)
-                # print("(upper_bound - lower_bound): ", (upper_bound - lower_bound))
-                # print("\n")
-            neuron_frs.append(firing_rate)
-        orientations_frs.append(neuron_frs)
-    firing_rates.append(orientations_frs)
-
-# Shape (stimulus_length, NUM_FRAMES, num_of_units)
-fr_per_stimulus = np.array(firing_rates)
-
-########### 4. Loading the stimulus ###########
-# Putting the frames and the firing rates together (Need to match type of stimulus chosen)
-stim_params = np.load(stim_params_file, allow_pickle=True, encoding='latin1').item()
-orientations = stim_params['stimulus']['sequence']['orientations']
-
-# Append all stimuli files together
-stimulus = []
-for orientation in orientations:
-  stim_file = f"moving_bar_{orientation}.npy"
-  stim_path = os.path.join(PSYCHOPY_STIMULI, stim_file)
-  stimulus.append(np.load(stim_path))
-
-# Shape (stimulus_length, NUM_FRAMES, HEIGHT, WIDTH)
-stimulus = np.array(stimulus)
-
-########### 5. Reshape and Save ###########
-# (stimulus_length * NUM_FRAMES, num_of_units)
-fr_per_stimulus = fr_per_stimulus.reshape((stimulus_length * NUM_FRAMES, fr_per_stimulus.shape[-1]))
-
-# (stimulus_length * NUM_FRAMES, WIDTH, HEIGHT)
-stimulus = stimulus.reshape((stimulus_length * NUM_FRAMES, stimulus.shape[-1], stimulus.shape[-2]))
-
-print("Firing Rates Shape: ", fr_per_stimulus)
-print("Stimulus Shape: ", stimulus)
-
-# Save the data together (4 -> moving_bar, 5 -> moving_grating)
-save_stim_file_name = "{}_4_stimulus_moving_bar.npy".format(experiment_tag)
-save_fr_file_name = "{}_4_fr_moving_bar.npy".format(experiment_tag)
-save_cluster_ids_file_name = "{}_cluster_ids.npy".format(experiment_tag)
-
-with open(os.path.join(TRAINING_DATA_SAVE_DIR, save_stim_file_name), 'wb') as f:
-    np.save(f, stimulus)
-
-with open(os.path.join(TRAINING_DATA_SAVE_DIR, save_fr_file_name), 'wb') as f:
-    np.save(f, fr_per_stimulus)
-
-with open(os.path.join(TRAINING_DATA_SAVE_DIR, save_cluster_ids_file_name), 'wb') as f:
-    np.save(f, np.array(clean_cluster_ids))
-
-print("Created ", save_stim_file_name)
-print("Created ", save_fr_file_name)
-print("Created ", save_cluster_ids_file_name)
-
-
-########### 6. Plot for validation ###########
-if VALIDATION_PLOT:
-    import matplotlib.pyplot as plt
-
-    # firing_rates shape: (T, N)
-    T, N = fr_per_stimulus.shape
-    units = np.random.choice(N, 3, replace=False)
-
-    fig, axs = plt.subplots(3, 1, figsize=(10, 6), sharex=True)
-
-    for ax, u in zip(axs, units):
-        ax.plot(fr_per_stimulus[:, u])
-        ax.set_title(f"Unit {u}")
-        ax.set_ylabel("Firing rate")
-
-    axs[-1].set_xlabel("Time")
-
-    plt.tight_layout()
-    plt.show()
+for experiment_name in experiment_names:
+    calculate_firing_rate_mb(experiment_name)
