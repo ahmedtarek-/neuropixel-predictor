@@ -2,15 +2,14 @@
 For moving bar and moving grating, calculates firing rate.
 
 Removes the units that are 'Flags' or 'Dendrites' (based on manual classification)
-{'MPW-Dendrite', 'Flag', 'MPW-Axon', 'SU-Regular', 'SU-Small', 'SU-Fast'}
+{'Flag', 'MPW-Dendrite', 'SU-Small', 'SU-Positive'}
 
 Things that needs to be changed:
-    1. 'experiment_names': Single unit file.
-    2. 'STIMULUS_NAME': Which stimulus to calculate FR for.
-    3. 'stimulus': Path to file that contains the actual stimulus used.
-    4. 'save_stim_file_name': Name of file to save stimulus.
-    5. 'save_fr_file_name': Name of file to save firing rates
-
+    1. 'experiment_names'       -> Single unit files.
+    2. 'STIMULUS_NAME':         -> Which stimulus to calculate FR for.
+    3. 'PSYCHOPY_STIMULI'       -> Where to load stimuli from
+    4. 'STIM_RESP_SAVE_DIR'     -> Where to save stimuli-responses pair data
+    
 Hints:
     - `data["stim_params_files"]["mb"]["stimulus"]["sequence"]["orientations"]`
     should match number of TTls in that protocol.
@@ -31,14 +30,13 @@ import pandas as pd
 DATA_FOLDER = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data'
 
 PSYCHOPY_STIMULI = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-36x22'
-TRAINING_DATA_SAVE_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-Delay'
+STIM_RESP_SAVE_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-36-22'
 
 SINGLE_UNIT_FOLDER = os.path.join(DATA_FOLDER, 'data-single-unit')
 STIM_PARAMS_FOLDER = os.path.join(DATA_FOLDER, 'Stimuli-Params')
 
 MLI_THRESHOLD = 0.5 # Include only units with more thab 50% modulation index.
 MLI_FILE = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/MLI_MB/storage_MLI_sparse_noise.npy'
-
 
 NP_FRQ = 30_000
 NP_DELAY = (50 * NP_FRQ) / 1000
@@ -48,16 +46,24 @@ FRAME_SPAN = (1/120) * NP_FRQ
 
 EXCLUDE_UNITS = ['Flag', 'MPW-Dendrite', 'SU-Small', 'SU-Positive']
 
-
 ######## B. Choosing stimuli  ########
 # Choose stimulus (ex. mb, mg)
 STIMULUS_NAME = 'mb'
 
 # Define stimuli_params_key
 stimuli_params_keys = {
-  '2022-12-20_15-08': '20221220/c11emb_params.npy',
-  '2023-03-15_11-05': '20230315bis/c11cmb_params.npy',
-  '2023-03-15_15-23': '20230315/c11cmb_params.npy',
+    '2022-12-20_15-08': '20221220/c11emb_params.npy',
+    '2023-03-15_11-05': '20230315bis/c11cmb_params.npy',
+    '2023-03-15_15-23': '20230315/c11cmb_params.npy',
+    '2022-12-21_13-09': '20221221/b11emb_params.npy',
+    '2023-02-23_08-57': '20230223/d11cmb_params.npy',
+    '2023-03-16_12-16': '20230316/c11cmb_params.npy',
+    '2023-03-21_16-17': '20230321/b11cmb_params.npy',
+    '2023-03-22_12-22': '20221222/b11cmb_params.npy',
+    '2023-04-13_12-35': '20230413/b11dmb_params.npy',
+    '2023-04-14_11-48': '20230414/b11cmb_params.npy',
+    '2023-04-17_12-26': '20230417/b11dmb_params.npy',
+    '2023-04-18_12-10': '20230418/b11dmb_params.npy',
 }
 
 ######## C. Defining helper method for modulation index based filtering ########
@@ -109,7 +115,6 @@ def calculate_firing_rate_mb(experiment_name, validation_plot=False):
     # data['events'].keys()
     stimulus_ttls = data['events'][STIMULUS_NAME]
 
-    
     # Stimulus Length
     stimulus_length = len(stimulus_ttls)
 
@@ -200,25 +205,47 @@ def calculate_firing_rate_mb(experiment_name, validation_plot=False):
     # Shape (stimulus_length, NUM_FRAMES, HEIGHT, WIDTH)
     stimulus = np.array(stimulus)
 
-    ########### 5. Reshape and Save ###########
+    ########### 5. Reshape ###########
     # (stimulus_length * NUM_FRAMES, num_of_units)
     fr_per_stimulus = fr_per_stimulus.reshape((stimulus_length * NUM_FRAMES, fr_per_stimulus.shape[-1]))
 
     # (stimulus_length * NUM_FRAMES, WIDTH, HEIGHT)
-    stimulus = stimulus.reshape((stimulus_length * NUM_FRAMES, stimulus.shape[-1], stimulus.shape[-2]))
+    stimulus = stimulus.reshape((stimulus_length * NUM_FRAMES, stimulus.shape[-2], stimulus.shape[-1]))
 
-    print("Firing Rates Shape: ", fr_per_stimulus)
-    print("Stimulus Shape: ", stimulus)
+    ########### 6. Remove empty stimulus frames ###########
+    # Indices of frames with only zero
+    non_zero_indices = np.count_nonzero(x, axis=1) != 0
 
+    zero_frames_count = len(stimulus) - non_zero_indices.sum()
+    print("\nDetected {} empty frames. Will remove them".format(zero_frames_count))
+
+    stimulus = stimulus[non_zero_indices]
+    fr_per_stimulus = fr_per_stimulus[non_zero_indices]
+
+    ########### 7. Center around 0 [-1, 1] ###########
+    # Check if stimulus is not normalized
+    if stimulus.mean() > 1:
+        print("\n[Vorsicht] Stimulus is not centered around 0.")
+        print("---- Assuming the stimulus has range [0,255]")
+        print("---- Will normalize to [-1,1]")
+        stimulus = (stimulus / 127.5) - 1
+
+    print("Firing Rates Shape: ", fr_per_stimulus.shape)
+    print("Stimulus Shape: ", stimulus.shape)
+
+    ########### 8. Save stimulus-response pairs ###########
     # Save the data together (4 -> moving_bar, 5 -> moving_grating)
+    save_stim_file_name = "{}_4_stimulus_moving_bar.npy".format(experiment_date)
+    save_fr_file_name = "{}_4_fr_moving_bar.npy".format(experiment_date)
+    save_cluster_ids_file_name = "{}_cluster_ids.npy".format(experiment_date)
 
-    with open(os.path.join(TRAINING_DATA_SAVE_DIR, save_stim_file_name), 'wb') as f:
+    with open(os.path.join(STIM_RESP_SAVE_DIR, save_stim_file_name), 'wb') as f:
         np.save(f, stimulus)
 
-    with open(os.path.join(TRAINING_DATA_SAVE_DIR, save_fr_file_name), 'wb') as f:
+    with open(os.path.join(STIM_RESP_SAVE_DIR, save_fr_file_name), 'wb') as f:
         np.save(f, fr_per_stimulus)
 
-    with open(os.path.join(TRAINING_DATA_SAVE_DIR, save_cluster_ids_file_name), 'wb') as f:
+    with open(os.path.join(STIM_RESP_SAVE_DIR, save_cluster_ids_file_name), 'wb') as f:
         np.save(f, np.array(clean_cluster_ids))
 
     print("Created ", save_stim_file_name)
