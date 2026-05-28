@@ -6,11 +6,11 @@ Removes the units that are 'Flags' or 'Dendrites' (based on manual classificatio
 
 
 Things that needs to be changed:
-    1. 'experiment_name': Single unit file.
+    1. 'experiment_names': Single unit file.
     2. 'stimulus_name': Which stimulus to calculate FR for.
     3. 'stimulus': Path to file that contains the actual stimulus used.
-    4. 'save_stim_file_name': Name of file to save stimulus.
-    5. 'save_fr_file_name': Name of file to save firing rates
+    
+    4. 'TRAINING_DATA_DIR': Name of file to save stimulus-response pair files.
 
 
 Stimuli files processed so far:
@@ -45,16 +45,15 @@ MLI_FILE = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/MLI_MB/storage
 SINGLE_UNIT_FOLDER = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/data-single-unit'
 
 # File to save stimuli-responses pairs
-TRAINING_DATA_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-36-22'
+TRAINING_DATA_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-64-36'
 
 
 ######## B. Choosing stimuli  ########
 # Choose stimulus (ex. Sd36x22_l_3, Sl36x22_d_3, csd, mb)
 stimulus_name = 'Sd36x22_l_3'
-stimulus_file = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-36x22/sparse_noise_dark_36_22.npy'
-# stimulus_file = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-64x36/sparse_noise_dark_64_36.npy'
+stimulus_file = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-64x36/sparse_noise_dark_64_36.npy'
+# stimulus_file = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-36x22/sparse_noise_dark_36_22.npy'
 # stimulus_file = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/sparse_noise_light_36_22.npy'
-# stimulus_file = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/checkerboard_200.npy'
 
 
 ######## C. Defining helper method for modulation index based filtering ########
@@ -196,19 +195,19 @@ def calculate_firing_rate(experiment_name):
 experiment_name = '2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
 
 experiment_names = [
-    "2023-01-27_12-58-44_Complete_spiketime_Header_TTLs_withdrops_n_withGUIclassif.pkl",
+    # "2023-01-27_12-58-44_Complete_spiketime_Header_TTLs_withdrops_n_withGUIclassif.pkl",
     "2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     "2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     "2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2022-12-21_13-09-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-02-23_08-57-20_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-03-16_12-16-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-03-21_16-17-18_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-03-22_12-22-12_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-04-13_12-35-02_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-04-14_11-48-04_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-04-17_12-26-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-04-18_12-10-34_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2022-12-21_13-09-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-02-23_08-57-20_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-03-16_12-16-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-03-21_16-17-18_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-03-22_12-22-12_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-04-13_12-35-02_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-04-14_11-48-04_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-04-17_12-26-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-04-18_12-10-34_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
 ]
 
 for experiment_name in experiment_names:

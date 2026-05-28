@@ -17,6 +17,22 @@ Hints:
     - `data["stim_params_files"]["csd"]["stimulus"]["trials"]` gives number
     of trials in the checkerboard.
 
+
+Time bins Normalization (VERY IMPORTANT):
+    - In `calculate_firing_rate.py` script, we calculate the firing rate of sparse noise darks
+    and use that as references for what rough frequency we apply for other binning.
+    - Using the following snippet gives us mean difference in ttls that was used to calculate
+    firing rate.
+    ```
+    sd_ttls = data['events']['Sd36x22_l_3']
+    np.diff(sd_ttls).mean()
+    ``` 
+    - The mean difference in ttls of sparse noise is 3004 which means 100ms
+    - In this script the firing rate is calculated per 250 (in 30khz), which means
+        8.3ms.
+    - Therefore the normalization factor is 8.3/100
+
+
 @author: Ahmed Abdalfatah (@ahmedtarek-)
 """
 
@@ -29,8 +45,8 @@ import pandas as pd
 ########### A. Define variables and data location ###########
 DATA_FOLDER = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data'
 
-PSYCHOPY_STIMULI = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-36x22'
-STIM_RESP_SAVE_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-36-22'
+PSYCHOPY_STIMULI = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-64x36' # Psychopy-36x22
+STIM_RESP_SAVE_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-64-36'
 
 SINGLE_UNIT_FOLDER = os.path.join(DATA_FOLDER, 'data-single-unit')
 STIM_PARAMS_FOLDER = os.path.join(DATA_FOLDER, 'Stimuli-Params')
@@ -41,17 +57,19 @@ MLI_FILE = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/MLI_MB/storage
 NP_FRQ = 30_000
 NP_DELAY = (50 * NP_FRQ) / 1000
 
-NUM_FRAMES = 192
+NORMALIZATION_FACTOR = 8.3/100
+
 FRAME_SPAN = (1/120) * NP_FRQ
 
 EXCLUDE_UNITS = ['Flag', 'MPW-Dendrite', 'SU-Small', 'SU-Positive']
 
 ######## B. Choosing stimuli  ########
-# Choose stimulus (ex. mb, mg)
+# Choose stimulus (ex. mb, mg_sq)
 STIMULUS_NAME = 'mb'
+NUM_FRAMES = 192 if STIMULUS_NAME == 'mb' else 180
 
 # Define stimuli_params_key
-stimuli_params_keys = {
+mb_stimuli_params_keys = {
     '2022-12-20_15-08': '20221220/c11emb_params.npy',
     '2023-03-15_11-05': '20230315bis/c11cmb_params.npy',
     '2023-03-15_15-23': '20230315/c11cmb_params.npy',
@@ -59,14 +77,23 @@ stimuli_params_keys = {
     '2023-02-23_08-57': '20230223/d11cmb_params.npy',
     '2023-03-16_12-16': '20230316/c11cmb_params.npy',
     '2023-03-21_16-17': '20230321/b11cmb_params.npy',
-    '2023-03-22_12-22': '20221222/b11cmb_params.npy',
+    '2023-03-22_12-22': '20230322/b11cmb_params.npy',
     '2023-04-13_12-35': '20230413/b11dmb_params.npy',
     '2023-04-14_11-48': '20230414/b11cmb_params.npy',
     '2023-04-17_12-26': '20230417/b11dmb_params.npy',
     '2023-04-18_12-10': '20230418/b11dmb_params.npy',
 }
 
+mg_stimuli_params_keys = {
+    '2023-03-21_16-17': '20230321/a11hmg_sq_params.npy',
+    '2023-03-22_12-22': '20230322/a11hmg_sq_params.npy',
+    '2023-04-13_12-35': '20230413/a11hmg_sq_params.npy',
+    '2023-04-14_11-48': '20230414/b11gmg_sq_params.npy'
+}
+
 ######## C. Defining helper method for modulation index based filtering ########
+class StimulusParamFileNotFound(Exception):
+    pass
 class MLINotFound(Exception):
     pass
 
@@ -97,8 +124,15 @@ def calculate_firing_rate_mb(experiment_name, validation_plot=False):
     print("\n=====================")
     print("Processing Experiment -> exp_date: ", experiment_date)
 
-
-    stim_params_file = stimuli_params_keys[experiment_date]
+    try:
+        if STIMULUS_NAME == 'mb':
+            stim_params_file = mb_stimuli_params_keys[experiment_date]
+        elif STIMULUS_NAME == 'mg_sq':
+            stim_params_file = mg_stimuli_params_keys[experiment_date]
+    except KeyError as e:
+        raise StimulusParamFileNotFound(
+            "Couldn't find stimulus parameter file for {}, will skip!".format(experiment_date)
+        )
     single_unit_file = os.path.join(SINGLE_UNIT_FOLDER, experiment_name)
     stim_params_file = os.path.join(STIM_PARAMS_FOLDER, stim_params_file)
 
@@ -106,7 +140,7 @@ def calculate_firing_rate_mb(experiment_name, validation_plot=False):
     # Load pickle
     data = pd.read_pickle(single_unit_file)
 
-    stim_params = np.load(stim_params_file, allow_pickle=True, encoding='latin1').item()
+    stim_params = np.load("/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Params/20230322/a11hmg_sq_params.npy", allow_pickle=True, encoding='latin1').item()
 
     # Reshape because of weird shape
     data = data.reshape((1))[0]
@@ -178,6 +212,7 @@ def calculate_firing_rate_mb(experiment_name, validation_plot=False):
                 # Duration: diff_in_ttl / 30000
                 # Rate: (sum/duration)
                 firing_rate = (spike_count * NP_FRQ) / (upper_bound - lower_bound)
+                firing_rate = firing_rate * NORMALIZATION_FACTOR
                 # if spike_count > 0:
                     # print("spike_count: ", spike_count)
                     # print("firing_rate: ", firing_rate)
@@ -197,8 +232,9 @@ def calculate_firing_rate_mb(experiment_name, validation_plot=False):
 
     # Append all stimuli files together
     stimulus = []
+    suffix = 'bar' if STIMULUS_NAME == 'mb' else 'grating_square'
     for orientation in orientations:
-      stim_file = f"moving_bar_{orientation}.npy"
+      stim_file = f"moving_{suffix}_{orientation}.npy"
       stim_path = os.path.join(PSYCHOPY_STIMULI, stim_file)
       stimulus.append(np.load(stim_path))
 
@@ -210,14 +246,15 @@ def calculate_firing_rate_mb(experiment_name, validation_plot=False):
     fr_per_stimulus = fr_per_stimulus.reshape((stimulus_length * NUM_FRAMES, fr_per_stimulus.shape[-1]))
 
     # (stimulus_length * NUM_FRAMES, WIDTH, HEIGHT)
+    print("Stimulus shape: ", stimulus.shape)
     stimulus = stimulus.reshape((stimulus_length * NUM_FRAMES, stimulus.shape[-2], stimulus.shape[-1]))
 
     ########### 6. Remove empty stimulus frames ###########
     # Indices of frames with only zero
-    non_zero_indices = np.count_nonzero(x, axis=1) != 0
+    non_zero_indices = np.count_nonzero(stimulus, axis=(1,2)) != 0
 
-    zero_frames_count = len(stimulus) - non_zero_indices.sum()
-    print("\nDetected {} empty frames. Will remove them".format(zero_frames_count))
+    zero_frames_count = stimulus.shape[0] - non_zero_indices.sum()
+    print("\nDetected {} empty frames (out of {}). Will remove them".format(zero_frames_count, stimulus.shape[0]))
 
     stimulus = stimulus[non_zero_indices]
     fr_per_stimulus = fr_per_stimulus[non_zero_indices]
@@ -235,8 +272,10 @@ def calculate_firing_rate_mb(experiment_name, validation_plot=False):
 
     ########### 8. Save stimulus-response pairs ###########
     # Save the data together (4 -> moving_bar, 5 -> moving_grating)
-    save_stim_file_name = "{}_4_stimulus_moving_bar.npy".format(experiment_date)
-    save_fr_file_name = "{}_4_fr_moving_bar.npy".format(experiment_date)
+    suffix = 'bar' if STIMULUS_NAME == 'mb' else 'grating'
+    numb = 4 if STIMULUS_NAME == 'mb' else 5
+    save_stim_file_name = "{}_{}_stimulus_moving_{}.npy".format(experiment_date, numb, suffix)
+    save_fr_file_name = "{}_{}_fr_moving_{}.npy".format(experiment_date, numb, suffix)
     save_cluster_ids_file_name = "{}_cluster_ids.npy".format(experiment_date)
 
     with open(os.path.join(STIM_RESP_SAVE_DIR, save_stim_file_name), 'wb') as f:
@@ -274,21 +313,25 @@ def calculate_firing_rate_mb(experiment_name, validation_plot=False):
         plt.show()
 
 experiment_names = [
-    # "2023-01-27_12-58-44_Complete_spiketime_Header_TTLs_withdrops_n_withGUIclassif.pkl",
+    "2023-01-27_12-58-44_Complete_spiketime_Header_TTLs_withdrops_n_withGUIclassif.pkl",
     "2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     "2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     "2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    # "2022-12-21_13-09-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    # "2023-02-23_08-57-20_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    # "2023-03-16_12-16-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    # "2023-03-21_16-17-18_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    # "2023-03-22_12-22-12_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    # "2023-04-13_12-35-02_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    # "2023-04-14_11-48-04_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    # "2023-04-17_12-26-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    # "2023-04-18_12-10-34_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    "2022-12-21_13-09-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    "2023-02-23_08-57-20_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    "2023-03-16_12-16-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    "2023-03-21_16-17-18_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    "2023-03-22_12-22-12_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    "2023-04-13_12-35-02_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    "2023-04-14_11-48-04_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    "2023-04-17_12-26-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    "2023-04-18_12-10-34_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
 ]
 
 
 for experiment_name in experiment_names:
-    calculate_firing_rate_mb(experiment_name)
+    try:
+        calculate_firing_rate_mb(experiment_name)
+    except StimulusParamFileNotFound as e:
+        print(e)
+        continue
