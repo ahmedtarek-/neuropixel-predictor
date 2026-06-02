@@ -12,11 +12,15 @@ Created on Thu Jun 28 12:41:06 2018
   # add scaling factor
   # direction movement raus weil orientation da ()
 # %%
+import os
 from psychopy import visual
 import matplotlib.pyplot as plt 
 import numpy as np
-import OurSetup
+import our_setup_new as OurSetup
 
+STIMULI_FOLDER = "/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-36x22"
+WIDTH = 36
+HEIGHT = 22
 
 # %%
 def run_stimulus(params,setup):
@@ -24,12 +28,12 @@ def run_stimulus(params,setup):
     filename_save = OurSetup.generate_filename_and_make_folders(params)
     # %% Create window
     win = setup['win']
-    trigger = setup['trigger']
+    # trigger = setup['trigger']
     background_color = params['monitor']['background']
     win.setRGB(background_color)
     win.flip()
     #win,trigger = OurSetup.OpenScreen(background_color,monitor_distance)
-    trigger.Stimulus_Start()
+    # trigger.Stimulus_Start()
      # we present background for few second such that the retina can adapt
     onset_adaptation_time_sec = params['stimulus']['onset_adaptation_time_sec']
     onset_adaptation_time_frames = int(np.round(onset_adaptation_time_sec * 120))
@@ -116,20 +120,21 @@ def run_stimulus(params,setup):
 
     # %% Create a grating stimulus
     triggercount = 0      
-    choice_format = params['header']['name']
-    if choice_format == 'V1_Kerstin':
-        grating = visual.GratingStim(win=win, pos=position, size=grating_size, sf=spatialfrequency_sequence[0], ori=360.-orientation_sequence[0],phase=0.,units='deg',tex='sqr') # tex='sqr' to present square gratings instead of sinusoidal
-    else:
-        grating = visual.GratingStim(win=win, pos=position, size=grating_size, sf=spatialfrequency_sequence[0], ori=360.-orientation_sequence[0],phase=0.,units='deg') #, mask='circle')  
+    choice_format = params['stimulus']['type']
+    # if choice_format == 'mg_sq':
+    #     grating = visual.GratingStim(win=win, pos=position, size=grating_size, sf=spatialfrequency_sequence[0], ori=360.-orientation_sequence[0],phase=0.,units='deg',tex='sqr')
+    # else:
+    #     grating = visual.GratingStim(win=win, pos=position, size=grating_size, sf=spatialfrequency_sequence[0], ori=360.-orientation_sequence[0],phase=0.,units='deg')
 #   
 #    OurSetup.present_pause(80,win)
 #    index_where_to_make_a_pause = np.array([4,9,14,19,24,29,34,39,44,49]) # this if for the Kersting V1 oddbal paradigm control repeat protocol
 #    stimulus_changes_variable = params['stimulus']['local_type']
+
     
     for ind in range(len(orientation_sequence)):
         # we have to generate the grating
         ori_tmp = 360.-orientation_sequence[ind] # we have to remapp the orientation such that it fits with the default way of polar plot
-        print orientation_sequence[ind]
+        print(orientation_sequence[ind])
         
         #####  dome start #####
         if params['monitor']['type'] == 'Dome':
@@ -145,11 +150,19 @@ def run_stimulus(params,setup):
         
         d_phase = tf_tmp/refreshrate 
         
-        grating = visual.GratingStim(win=win, pos=position, size=grating_size, sf=sf_tmp, ori=ori_tmp,phase=phase_init,units='deg')    
+        # grating = visual.GratingStim(win=win, pos=position, size=grating_size, sf=sf_tmp, ori=ori_tmp,phase=phase_init,units='deg')    
+        if choice_format == 'mg_sq':
+            grating = visual.GratingStim(win=win, pos=position, size=grating_size, sf=sf_tmp, ori=ori_tmp, phase=phase_init, units='deg', tex='sqr')
+        else:
+            grating = visual.GratingStim(win=win, pos=position, size=grating_size, sf=sf_tmp, ori=ori_tmp, phase=phase_init, units='deg')
         
         # first we need to present the gray period before the grating
+        print("[DEBUG] Currently in degree: ", ori_tmp)
+        print("[DEBUG] Presenting {} frames pause".format(pause_duration_frames))
         OurSetup.present_pause(pause_duration_frames,win)
         #  Move the stimulus: Create loop where you change spatial phase, orientation or position
+
+        psychopy_frames = []
         for frameN in range(stimulus_duration_frames):     # 1 frame = 8ms, range = duration of 1 frame/image  , 500 / 120 =>500 = 4 sec, 200/120-->1.6s
             #% draw stimulus and update window
             grating.setPhase(d_phase, '+')    #, '+')            # spatial phase = t*n[Hz], value between 0 and 1 (*n Hz): 0.25 shifts image by half a cycle advance phase by X of a cycle. temporal frequency has modulus 1 (speed > faster), direction of moving: '+' or '-'
@@ -157,10 +170,28 @@ def run_stimulus(params,setup):
             grating.draw()
             #win.update()
             win.flip()
+            frame = win.getMovieFrame(buffer='front')
+            frame_np = np.array(frame.convert('L'))
+
+            psychopy_frames.append(frame_np)
+
             if frameN == 0:
-                trigger.FrameTime()        # only at stim onset
+                # trigger.FrameTime()        # only at stim onset
                 triggercount += 1
                 print(str(triggercount)+'-'+str(len(orientation_sequence)))
+
+        psychopy_frames = np.array(psychopy_frames)
+        print("Psychopy Frames shape:")
+        print(psychopy_frames.shape)
+        print("")
+
+        if choice_format == 'mg_sq':
+            file_name = f'moving_grating_square_{ori_tmp}.npy'
+        else:
+            file_name = f'moving_grating_{ori_tmp}.npy'
+        file_path = os.path.join(STIMULI_FOLDER, file_name)
+        with open(file_path, 'wb') as f:
+            np.save(f, psychopy_frames)
         # % pause after the stimulus
 #        OurSetup.present_pause(pause_duration_frames,win)
     # %% cleanup
@@ -176,5 +207,5 @@ def run_stimulus(params,setup):
 #            else:
 #                OurSetup.present_pause(120,win)# normal standart pause
       
-    trigger.Stimulus_Stop()          
+    # trigger.Stimulus_Stop()          
    # win.close()

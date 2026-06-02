@@ -65,7 +65,7 @@ EXCLUDE_UNITS = ['Flag', 'MPW-Dendrite', 'SU-Small', 'SU-Positive']
 
 ######## B. Choosing stimuli  ########
 # Choose stimulus (ex. mb, mg_sq)
-STIMULUS_NAME = 'mb'
+STIMULUS_NAME = 'mg_sq'
 NUM_FRAMES = 192 if STIMULUS_NAME == 'mb' else 180
 
 # Define stimuli_params_key
@@ -274,6 +274,7 @@ def calculate_firing_rate_mb(experiment_name, validation_plot=False):
     # Save the data together (4 -> moving_bar, 5 -> moving_grating)
     suffix = 'bar' if STIMULUS_NAME == 'mb' else 'grating'
     numb = 4 if STIMULUS_NAME == 'mb' else 5
+
     save_stim_file_name = "{}_{}_stimulus_moving_{}.npy".format(experiment_date, numb, suffix)
     save_fr_file_name = "{}_{}_fr_moving_{}.npy".format(experiment_date, numb, suffix)
     save_cluster_ids_file_name = "{}_cluster_ids.npy".format(experiment_date)
@@ -313,19 +314,19 @@ def calculate_firing_rate_mb(experiment_name, validation_plot=False):
         plt.show()
 
 experiment_names = [
-    "2023-01-27_12-58-44_Complete_spiketime_Header_TTLs_withdrops_n_withGUIclassif.pkl",
-    "2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2022-12-21_13-09-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-02-23_08-57-20_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-03-16_12-16-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-01-27_12-58-44_Complete_spiketime_Header_TTLs_withdrops_n_withGUIclassif.pkl",
+    # "2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2022-12-21_13-09-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-02-23_08-57-20_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-03-16_12-16-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     "2023-03-21_16-17-18_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     "2023-03-22_12-22-12_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     "2023-04-13_12-35-02_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     "2023-04-14_11-48-04_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-04-17_12-26-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-04-18_12-10-34_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-04-17_12-26-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-04-18_12-10-34_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
 ]
 
 

@@ -12,7 +12,7 @@ import our_setup_new as OurSetup
 import matplotlib.pyplot as plt
 import ImageStimulus
 import MovingBarStimulus
-# import MovingGratingStimulus
+import MovingGratingStimulus
 # import MovingLocalGratingStimulus
 # import MovingBarGridStimulus
 # import LoomingStimulus
@@ -22,12 +22,12 @@ from time import time
 import CSDStimulus    
 # from scipy.signal import chirp
 
-STIMULI_FOLDER = "/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli"
+STIMULI_FOLDER = "/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Raw Stimuli"
 
 # %%# %
 start = time()
 # stimuli = ['mb','sl36x22_3','sd36x22_3','chi','mg','csd'] #['slquick'] ['slquick'] #
-stimuli = ['sd36x22_3'] # mb, sd36x22_3
+stimuli = ['sl36x22_3'] # chi, SwapMovie, mb, sd36x22_3, mg_sq, csd, cm_36x22
 
 #['cm_36x22']#['mb_thin','sl36x22_05','sd36x22_05','sl36x22_01','sd36x22_01','chi_ultra_fast','mg','mb','sl36x22_2','sd36x22_2','sl36x22_1','sd36x22_1','chi','lo','cm_36x22','csd'] # ['slquick'] # ['mb','sl15x15_2','sd15x15_2','sl15x15_1','sd15x15_1','sl15x15_3','sd15x15_3','mg'] 
 # ['slquick', 'sdquick','mg','mb','lo','chi','Kerstin_long','Kerstin_short','slquick','sdquick',] #['slquick'] # ['Kerstin short']
@@ -660,13 +660,12 @@ for i in range(n_stimuli):
     
     elif stimulus_type == 'sl36x22_3':
         # load the stimulus file
-        # TAREK: HERE
         filename = 'locally_light_sparse_noise_36_22_target_size_3_targets_per_frame_2_trials_10_background_-1.0_20181120.npy'#'locally_light_sparse_noise_36_18_target_size_2_targets_per_frame_4_trials_30_background_0.0_20181115.npy'
-        stimPath = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/locally_light_sparse_noise_36_22_target_size_3_targets_per_frame_2_trials_10_background_-1.0_20181120.npy'
-                    
-        stimulus['filename'] = filename
-        stimulus_tmp = np.load(stimPath, allow_pickle=True, encoding='latin1').item()
+        filepath = os.path.join(STIMULI_FOLDER, filename)
+
+        stimulus_tmp = np.load(filepath, allow_pickle=True, encoding='latin1').item()
         stimulus_frames = stimulus_tmp['frames']
+
         background = stimulus_tmp['background']
         
         params['monitor']['background'] = [background,background,background]
@@ -703,6 +702,76 @@ for i in range(n_stimuli):
         params['analysis'] = analysis
         # run
         ImageStimulus.present_images(stimulus_frames,params,setup)
+
+    elif stimulus_type == 'NaturalMovie':      # NaturalMovie 329 frames, 20 trials 6580 fts)
+        # load the stimulus file
+        filename = 'nn.3707-sv1.mp4_Array_Norm_v2.npy' # (480, 720, 329)
+        stimulus['filename'] = filename
+        
+        stimulus_tmp = np.load(os.path.join(STIMULI_FOLDER, filename))  #np.load('stimuli/'+filename).item()
+        stimulus_frames = stimulus_tmp  #['stimulus']
+
+        # just for testing the moving gratings
+        #stimulus_frames = GenerateMovingGratings.generate_moving_grating(orientation_deg=90.)
+        #background = stimulus_tmp['background']
+        params['monitor']['background'] = [0,0,0] #[background,background,background]
+        stimulus['trials'] = 2 #25.
+        stimulus['scale'] = 0.3 # (720, 480)-> 0.3*720.=216 deg covered. scale = deg --> 1pix size = scale, i.e. scale = 1 means that one noise pixel has the size of 1x1 deg
+        stimulus['stimulus_duration_in_frames'] = 4  #120Hz = 1frame/sampling rate (120 frames / sec)--> 120Hz/30Hz = 4 frames per sec /  120/4 = 30 Hz  (329 frames in 10 sec ---> 32.9Hz)
+        stimulus['position'] = position # in deg
+
+        analysis['type'] = 'STA'
+
+        params['stimulus'] = stimulus
+        params['analysis'] = analysis
+        # run
+        ImageStimulus.present_images(stimulus_frames, params, setup)
+        #ImageStimulus.present_images_with_first_frame_trigger(stimulus_frames,params,setup)
+
+
+    elif stimulus_type == 'PhaseScrblMovie':    # 329 frames, (20 trials 6580 fts)
+        # load the stimulus file
+        filename = 'nn.3707-sv2.mp4_PhaseScrmb_Array_Norm_v2.npy' # (480, 720, 329)
+        stimulus['filename'] = filename
+        
+        stimulus_tmp = np.load(os.path.join(STIMULI_FOLDER, filename))  #np.load('stimuli/'+filename).item()
+        stimulus_frames = stimulus_tmp  #['stimulus']
+
+        params['monitor']['background'] = [0,0,0] #[background,background,background]
+        stimulus['trials'] = 20 #20 #25.
+        stimulus['scale'] = 0.3 # (720, 480)-> 0.3*720.=216 deg covered. scale = deg --> 1pix size = scale, i.e. scale = 1 means that one noise pixel has the size of 1x1 deg
+        stimulus['stimulus_duration_in_frames'] = 1  #3.7 # 120/4 = 30 Hz  (329 frames in 10 sec ---> 32.9Hz)
+        stimulus['position'] = position # in deg
+
+        analysis['type'] = 'STA'
+
+        params['stimulus'] = stimulus
+        params['analysis'] = analysis
+        # run
+        ImageStimulus.present_images(stimulus_frames,params,setup)
+        #ImageStimulus.present_images_with_first_frame_trigger(stimulus_frames,params,setup)
+
+    elif stimulus_type == 'SwapMovie':    # 329 frames, (20 trials 6580 fts)
+        # load the stimulus file
+        filename = 'nn.3707-sv1.mp4_Swap_Frames_Array_Norm_v2.npy' # (480, 720, 329)
+        stimulus['filename'] = filename
+
+        stimulus_tmp = np.load(os.path.join(STIMULI_FOLDER, filename))  #np.load('stimuli/'+filename).item()
+        stimulus_frames = stimulus_tmp  #['stimulus']
+
+        params['monitor']['background'] = [0,0,0] #[background,background,background]
+        stimulus['trials'] = 1 #20 #25.
+        stimulus['scale'] = 0.3 # (720, 480)-> 0.3*720.=216 deg covered. scale = deg --> 1pix size = scale, i.e. scale = 1 means that one noise pixel has the size of 1x1 deg
+        stimulus['stimulus_duration_in_frames'] = 4  #3.7 # 120/4 = 30 Hz  (329 frames in 10 sec ---> 32.9Hz)
+        stimulus['position'] = position # in deg
+
+        analysis['type'] = 'STA'
+
+        params['stimulus'] = stimulus
+        params['analysis'] = analysis
+        # run
+        ImageStimulus.present_images(stimulus_frames,params,setup)
+        #ImageStimulus.present_images_with_first_frame_trigger(stimulus_frames,params,setup)
         
     elif stimulus_type == 'sl36x22_g_1':
         # load the stimulus file
@@ -1061,7 +1130,7 @@ for i in range(n_stimuli):
         stimulus['local_type'] = 'do nothing'
         stimulus['trials'] =10
         stimulus['temporalfrequencies'] = np.array([2.])#,2.,3.]) # in Hz, maybe here going to 2 would save time? # for LGN: 2,3,4 Hz
-        stimulus['spatialfrequencies'] = np.array([0.02,0.04,0.08]) #np.array([0.01,0.02,0.04,0.08,0.16]) # np.array([0.01,0.02,0.04,0.08,0.16])
+        stimulus['spatialfrequencies'] = np.array([0.04]) # np.array([0.02,0.04,0.08]) #np.array([0.01,0.02,0.04,0.08,0.16]) # np.array([0.01,0.02,0.04,0.08,0.16])
         stimulus['orientations'] = np.linspace(0.,360.-(360/12.),12) # np.array([270.]) #  np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12) #np.linspace(0.,360.-(360/12.),12)  # np.array([210.])
         stimulus['size'] = ([400.,400.]) # np.array([50.,50.]) # ([400.,400.]) # to change in order to reduce the mask size
         stimulus['phase'] = 0.0
@@ -1079,6 +1148,27 @@ for i in range(n_stimuli):
         # run
         MovingGratingStimulus.run_stimulus(params,setup)    
         print("Time passed %d" %(time()-start) + ' seconds')
+
+    elif stimulus_type == 'mg_sq':
+        stimulus['trials'] = 30 #20 #50 #15# 100
+        stimulus['temporalfrequencies'] = [2.5]# np.array([1., 4.]) 
+        stimulus['spatialfrequencies'] = [0.05]  #[0.1]
+        stimulus['orientations'] = np.linspace(0.,360.-(360/12.),12) 
+        stimulus['size'] = np.array([200.,200.]) # ([400.,400.]) # to change in order to reduce the mask size
+        stimulus['phase'] = 0.0
+        stimulus['duration'] = 1.5
+        stimulus['pause'] = 0.25 #0.5 the pause runs twice
+        stimulus['position'] = position
+        params['monitor']['background'] = [0.,0.,0.]
+
+        analysis['type'] = 'TuningPolar'
+        analysis['parameters'] = ['orientations']
+        analysis['psth_duration'] = stimulus['duration']
+
+        params['stimulus'] = stimulus
+        params['analysis'] = analysis
+        # run
+        MovingGratingStimulus.run_stimulus(params,setup)
 
     elif stimulus_type == 'mb': #mooving bar white or black on gray background
         stimulus['trials'] = 15 # Should be 10
@@ -1159,12 +1249,14 @@ for i in range(n_stimuli):
         
     elif stimulus_type == 'cm_36x22': 
         # load the stimulus file
-        filename =  'Checkerboard_36_22_n_frames_7920.0_20181120.npy'#'Checkerboard_36_22_n_frames_6480.0__20181114.npy' #'Checkerboard_45_25_target_size_1_n_frames_5000_20181024.npy' 
-        
+        # filename =  'Checkerboard_36_22_n_frames_7920.0_20181120.npy' # 'Checkerboard_36_22_n_frames_6480.0__20181114.npy' #'Checkerboard_45_25_target_size_1_n_frames_5000_20181024.npy' 
+        filename = 'Checkerboard_12_7_target_size_3_n_frames_500_20200430.npy'
+        filepath = os.path.join(STIMULI_FOLDER, filename)
+
         stimulus['filename'] = filename
         #stimulus_tmp = np.load('stimuli/'+filename)#.item()
         #stimulus_frames = np.load('stimuli/'+filename) #.item()
-        stimulus_tmp = {'background':-0.0,'frames':np.load('stimuli/'+filename), 'target': -1.0}
+        stimulus_tmp = {'background':-0.0, 'frames': np.load(filepath), 'target': -1.0}
         stimulus_frames = stimulus_tmp['frames']
         background = stimulus_tmp['background']
         
@@ -1239,8 +1331,11 @@ for i in range(n_stimuli):
     elif stimulus_type == 'chi':
         # load the stimulus file
         filename = 'chirp_stimulus_20181011.npy'
+        filepath = os.path.join(STIMULI_FOLDER, filename)
+        
         stimulus['filename'] = filename
-        stimulus_frames = np.load('stimuli/'+filename)
+        stimulus_frames = np.load(filepath)
+        
         # parameters
         params['monitor']['background'] = [0.,0.,0.]
         stimulus['trials'] = 20

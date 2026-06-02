@@ -6,15 +6,11 @@ Removes the units that are 'Flags' or 'Dendrites' (based on manual classificatio
 
 
 Things that needs to be changed:
-    1. 'experiment_names': Single unit file.
+    1. 'experiment_names': Single unit files.
     2. 'stimulus_name': Which stimulus to calculate FR for.
-    3. 'stimulus': Path to file that contains the actual stimulus used.
-    
+    3. 'stimulus_file': Path to file that contains the actual stimulus used.
     4. 'TRAINING_DATA_DIR': Name of file to save stimulus-response pair files.
 
-
-Stimuli files processed so far:
-    [sparse_noise_light_36_22.npy, sparse_noise_dark_36_22.npy, checkerboard_200.npy]
 
 Hints:
     - `data["stim_params_files"]["mb"]["stimulus"]["sequence"]["orientations"]`
@@ -22,6 +18,11 @@ Hints:
 
     - `data["stim_params_files"]["csd"]["stimulus"]["trials"]` gives number
     of trials in the checkerboard.
+
+Normalization for natural movie
+    - The mean difference in ttls of sparse noise is 3004 which means 100ms
+    - Mean diff of natural movies ttls diff is 900ms
+    - Therefore the normalization factor is 900/100 = 9
 
 @author: Ahmed Abdalfatah (@ahmedtarek-)
 """
@@ -45,14 +46,14 @@ MLI_FILE = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/MLI_MB/storage
 SINGLE_UNIT_FOLDER = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/data-single-unit'
 
 # File to save stimuli-responses pairs
-TRAINING_DATA_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-64-36'
+TRAINING_DATA_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-36-22'
 
 
 ######## B. Choosing stimuli  ########
-# Choose stimulus (ex. Sd36x22_l_3, Sl36x22_d_3, csd, mb)
-stimulus_name = 'Sd36x22_l_3'
-stimulus_file = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-64x36/sparse_noise_dark_64_36.npy'
-# stimulus_file = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-36x22/sparse_noise_dark_36_22.npy'
+# Choose stimulus (ex. Sd36x22_l_3, Sl36x22_d_3, csd, Nat_Mov, Nat_Mov_sw, Nat_Mov_sc)
+stimulus_name = 'Sl36x22_d_3' # 'Nat_Mov'
+stimulus_file = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-36x22/sparse_noise_light_36_22.npy'
+# stimulus_file = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-36x22/natural_movie_swap_36_22.npy'
 # stimulus_file = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/sparse_noise_light_36_22.npy'
 
 
@@ -136,6 +137,12 @@ def calculate_firing_rate(experiment_name):
 
     ######## 2. Calculate Firing Rate ########
 
+    if 'Nat_Mov' in stimulus_name:
+        stimulus_length = len(stimulus_ttls)
+        indices = np.arange(stimulus_length, step=20)
+        stimulus_ttls = stimulus_ttls[indices]
+        stimulus_length -= 1
+
     # Dealing with delay by subtracting 50ms from all units in clean_st_aligned. (Retina Delay)
     clean_st_aligned = [(unit - NP_DELAY) for unit in clean_st_aligned]
 
@@ -154,12 +161,19 @@ def calculate_firing_rate(experiment_name):
 
     # Shape (stimulus_length, num_of_units)
     fr_per_stimulus = np.array(firing_rates)
+    print("fr_per_stimulus.shape")
+    print(fr_per_stimulus.shape)
 
     ######## 3. Putting Firing Rates with Stimuli Frames ########
 
     # Putting the frames and the firing rates together (Need to match type of stimulus chosen) 
     stimulus = np.load(stimulus_file)
 
+    if 'Nat_Mov' in stimulus_name:
+        stimulus_length = len(stimulus) - 1
+
+    print("stimulus_length")
+    print(stimulus_length)
     # Trim the extra frames.
     stimulus = stimulus[:stimulus_length]
 
@@ -170,9 +184,25 @@ def calculate_firing_rate(experiment_name):
         print("---- Will normalize to [-1,1]")
         stimulus = (stimulus / 127.5) - 1
 
-    # Save the data together (1 -> checkerboard, 2 -> sn dark, 3 -> sn light, 4 -> mb)
-    save_stim_file_name = "{}_2_stimulus_sn_dark.npy".format(exp_date)
-    save_fr_file_name = "{}_2_fr_sn_dark.npy".format(exp_date)
+    if 'Sd' in stimulus_name:
+        suffix = 'sn_dark'
+        stim_id = 2
+    elif 'Sl' in stimulus_name:
+        suffix = 'sn_light'
+        stim_id = 3
+    elif stimulus_name == 'Nat_Mov':
+        suffix = 'nat_mov'
+        stim_id = 6
+    elif stimulus_name == 'Nat_Mov_sw':
+        suffix = 'nat_mov_sw'
+        stim_id = 7
+    elif stimulus_name == 'Nat_Mov_sc':
+        suffix = 'nat_mov_sc'
+        stim_id = 8
+
+    # Save the data together (1 -> checkerboard, 2 -> sn dark, 3 -> sn light, 6 -> nat_mov)
+    save_stim_file_name = "{}_{}_stimulus_{}.npy".format(exp_date, stim_id, suffix)
+    save_fr_file_name = "{}_{}_fr_{}.npy".format(exp_date, stim_id, suffix)
     save_cluster_ids_file_name = "{}_cluster_ids.npy".format(exp_date)
 
     with open(os.path.join(TRAINING_DATA_DIR, save_stim_file_name), 'wb') as f:
@@ -190,13 +220,9 @@ def calculate_firing_rate(experiment_name):
 
 
 # Choosing experiment name(s)
-# experiment_name = '2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
-# experiment_name = '2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
-experiment_name = '2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl'
-
 experiment_names = [
     # "2023-01-27_12-58-44_Complete_spiketime_Header_TTLs_withdrops_n_withGUIclassif.pkl",
-    "2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     "2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     "2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     # "2022-12-21_13-09-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",

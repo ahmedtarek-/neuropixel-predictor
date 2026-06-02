@@ -17,10 +17,12 @@ from psychopy.visual.windowwarp import Warper
 # import nidaqmx      # do not use port0.0, port0.1=4, 2=8, 3=16,...
 
 # The original screen was 2560x1440. So the width and height should always have same aspect ratio
-WIDTH = 64 # 2560
-HEIGHT = 36 # 1440
-# WIDTH = 36
-# HEIGHT = 22
+# WIDTH = 64 # 2560  # 2560
+# HEIGHT = 36 # 1440  # 1440
+
+WIDTH = 36
+HEIGHT = 22
+
 
 def get_default_parameters():
     header = {}
@@ -157,7 +159,8 @@ def OpenScreen(background_color,monitor_distance,monitor_type):
         background_color = [-1,-1,-1]
         # DellMonitor = monitors.Monitor('NEC_20191202good_Seewiesen20200106')
         DellMonitor = monitors.Monitor('Dell_20190626') # From original script
-        DellMonitor.setWidth(52)                      # physical width in cm (MEASURE THIS)
+        # DellMonitor.setWidth(61)                      # 54 Works perfectly, 61 is real width but  
+        DellMonitor.setWidth(54)                        # 54 Works perfectly, 61 is real width but 
         DellMonitor.setDistance(monitor_distance)
         DellMonitor.setSizePix([WIDTH/2, HEIGHT/2])     # pixel resolution. USE THIS IF APPLE RETINA
         # DellMonitor.setSizePix([WIDTH, HEIGHT])       # pixel resolution. USE THIS IF NOT APPLE RETINA
@@ -173,7 +176,7 @@ def OpenScreen(background_color,monitor_distance,monitor_type):
             screen=0,
             waitBlanking=True,
             units='deg',
-            color=background_color
+            color=background_color,
             ) # fullscr=True, size=[1512, 982],allowGUI=False,units='deg',color=background_color)
         # win.winHandle.set_visible(False)
         print('dell screen options selected')

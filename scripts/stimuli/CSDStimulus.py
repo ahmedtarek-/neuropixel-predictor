@@ -10,6 +10,7 @@ import numpy as np
 import time
 
 
+import our_setup_new as OurSetup
 
 from psychopy import core
 # from ctypes import windll       # load parallel port library
@@ -22,10 +23,16 @@ import numpy as np
 from psychopy.visual.windowwarp import Warper
 # import nidaqmx      # do not use port0.0, port0.1=4, 2=8, 3=16,...
 
+
+STIMULI_FOLDER = "/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-36x22"
+WIDTH = 36
+HEIGHT = 22
+
+
 def get_default_parameters():
     header = {}
-    header['folder_tmp'] = u'\\\\ONLINEANALYSIS\\exchange-folder\\onlinetmp\\'
-    header['folder_save'] = u'\\\\ONLINEANALYSIS\\exchange-folder\\onlinedata\\'
+    # header['folder_tmp'] = u'\\\\ONLINEANALYSIS\\exchange-folder\\onlinetmp\\'
+    # header['folder_save'] = u'\\\\ONLINEANALYSIS\\exchange-folder\\onlinedata\\'
     
     monitor = {}
     monitor['background'] = [0.,0.,0.]
@@ -163,10 +170,10 @@ def OpenScreen(background_color,monitor_distance,monitor_type):
         print('dell screen options selected')
         
           
-    trigger = Trigger()
+    # trigger = Trigger()
     time.sleep(1.)
     
-    return win,trigger
+    return win #,trigger
 
 
 def present_pause(n_frames,win,trigger=None):
@@ -182,7 +189,7 @@ def present_pause(n_frames,win,trigger=None):
 def write_current_params_and_wait_for_go(params):
     tmp_dir = params['header']['folder_tmp']
     filename_tmp = tmp_dir + 'current_params.npy'
-    np.save(filename_tmp,params)
+    # np.save(filename_tmp,params)
     print('Saved params')
     # now we wait for the go
     filename_go_stimulus = tmp_dir + 'go_stimulus.npy'
@@ -222,7 +229,7 @@ def generate_filename_and_make_folders(params):
 
 def present_images(params,setup):
      # %% we create some filenames, the tmp is used for the communication with the stimulus pc. the save for saving ... haha 
-    filename_save = OurSetup.generate_filename_and_make_folders(params)
+    # filename_save = OurSetup.generate_filename_and_make_folders(params)
     # %% Create window
     win = setup['win']
     # trigger = setup['trigger']
@@ -263,7 +270,7 @@ def present_images(params,setup):
     # we save the params
     if not params['test']:
         # we save the params in the folder, always needed. Just in test maybe not
-        np.save(filename_save,params)
+        # np.save(filename_save,params)
         # we wait for the online analysis
         if params['closed_loop_with_analysis']:
             OurSetup.write_current_params_and_wait_for_go(params)
@@ -271,13 +278,18 @@ def present_images(params,setup):
     # we present some text outside the screen to get the system up and running
     # OurSetup.present_pause(120,win,trigger)# in frames    
     
+
+    psychopy_frames = np.empty(
+        (params['stimulus']['trials'], HEIGHT, WIDTH),
+        dtype=np.uint8
+    )  
     for trial in range(int(params['stimulus']['trials'])):
         # on even trials we present checker, on odds checker inverse
         if np.mod(trial,2) == 0: # even 
             image = image_checker
         else:
             image = image_checker_inverse
-                
+        
         # present images
         for flipN in range(stimulus_duration_in_frames):
             image.draw()
@@ -285,9 +297,19 @@ def present_images(params,setup):
             #raw_input()
             if flipN == 0:
                 # trigger.FrameTime()
-#            trigger.EyeCamera()
+                # trigger.EyeCamera()
+                frame = win.getMovieFrame(buffer='front')
+                frame_np = np.array(frame.convert('L'))
+                vertically_flipped_frame = np.flip(frame_np, 0)
+                psychopy_frames[trial] = vertically_flipped_frame
                 a = 1
-    # done
+    print("psychopy_frames shape:")
+    print(psychopy_frames.shape)
+    file_name = f'csd_{WIDTH}_{HEIGHT}.npy'
+    file_path = os.path.join(STIMULI_FOLDER, file_name)
+    print("Saving file: ", file_path)
+    with open(file_path, 'wb') as f:
+        np.save(f, psychopy_frames) 
     # we flip one more time to make the screen gray
     win.flip()
     # OurSetup.present_pause(360,win,trigger)# in frames
@@ -343,11 +365,11 @@ def present_images_with_first_frame_trigger(stimulus_frames,params,setup):
             for flipN in range(stimulus_duration_in_frames):
                 images[str(frameN)].draw()
                 win.flip()
-                if frameN == 0:
-                    trigger.FrameTime()
+                # if frameN == 0:
+                    # trigger.FrameTime()
         # we flip one more time to make the screen gray
         win.flip()
-        OurSetup.present_pause(360,win)# in frames
+        OurSetup.present_pause(360, win)# in frames
     
     # %%
     #OurSetup.present_pause(240,win)# in frames

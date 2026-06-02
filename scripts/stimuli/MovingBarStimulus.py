@@ -13,7 +13,9 @@ import numpy as np
 from psychopy import visual, monitors
 import our_setup_new as OurSetup
 
-STIMULI_FOLDER = "/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy"
+STIMULI_FOLDER = "/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-36x22"
+WIDTH = 36
+HEIGHT = 22
 
 # %%
 def run_stimulus(params,setup):
