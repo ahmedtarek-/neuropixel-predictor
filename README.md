@@ -60,3 +60,38 @@ that will be used as input to the network. This should be done to every stimulus
 above.
 
 
+## C. Exact Steps to Run Pipeline
+
+Let's say we have this list of stimuli
+
+```
+2022-12-20_15-08-10
+processing with mb having 120 TTLs
+processing with Sl36x22_d_3 having 4561 TTLs
+processing with Sd36x22_l_3 having 4561 TTLs
+processing with mg_sq having 240 TTLs
+
+============
+2022-12-21_13-09-10
+processing with mb having 120 TTLs
+processing with Sl36x22_d_3 having 4561 TTLs
+processing with Sd36x22_l_3 having 4561 TTLs
+processing with mg_sq having 240 TTLs
+```
+
+- We need these exact steps for each experiment (i.e twice in that case)
+1. Generate the desired stimuli sizes using psychopy (check scripts section)
+
+2. Calculate Firing Rate (edit script for each stimuli with correct name and paths)
+    1. Run `calculate_firing_rate.py` once for 'Sl36x22_d_3'
+    2. Run `calculate_firing_rate.py` once for 'Sd36x22_d_3'
+    3. Run `calculate_firing_rate_mb.py` once for 'mb'
+    4. Run `calculate_firing_rate_mb.py` once for 'mg_sq'
+
+3. Generate Training data
+    1. Choose the stimuli [sl, sd, mb, mg_sq] from the end of `gen_training_and_test_data.py`
+    2. Choose the desired experiment
+    3. Choose where to save the training files (ex. `path/TRAINING_FOLDER`)
+    4. Run the `gen_training_and_test_data.py` script
+
+4. Go to simplified_notebooks, paste the `path/TRAINING_FOLDER`, run the notebook
