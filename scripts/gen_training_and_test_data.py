@@ -123,23 +123,23 @@ def gen_training_and_test_data(experiment_date, stimulus_numbers):
 
 experiment_dates = [
     # "2022-12-20_15-08",
-    "2023-03-15_11-05",
-    "2023-03-15_15-23",
-    # "2023-01-27_12-58",
     # "2022-12-21_13-09",
-    # "2023-02-23_08-57",
-    # "2023-03-16_12-16",
+    # "2023-03-15_11-05",
+    # "2023-03-15_15-23",
+    # "2023-01-27_12-58", NO
+    # "2023-02-23_08-57", NO
+    # "2023-03-16_12-16", 
     # "2023-03-21_16-17",
     # "2023-03-22_12-22",
     # "2023-04-13_12-35",
     # "2023-04-14_11-48",
     # "2023-04-17_12-26",
-    # "2023-04-18_12-10",
+    "2023-04-18_12-10",
 ]
 
 # stimulus_number: (1 -> checkerboard, 2 -> sn dark, 3 -> sn light, 4 -> mb, 5 -> mg
 #    6 -> natural_movie, 7 -> natural_movie_swap, 8 -> natural_movie_scramble, 9 -> chirp)
-stimuli_numbers = [2, 3, 4, 6, 7, 8, 9]
+stimuli_numbers = [2, 3, 4, 5, 6, 7, 8, 9]
 
 for experiment_date in experiment_dates:
     gen_training_and_test_data(experiment_date, stimuli_numbers)

@@ -45,8 +45,8 @@ import pandas as pd
 ########### A. Define variables and data location ###########
 DATA_FOLDER = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data'
 
-PSYCHOPY_STIMULI = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-64x36' # Psychopy-36x22
-STIM_RESP_SAVE_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-64-36'
+PSYCHOPY_STIMULI = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-36x22'
+STIM_RESP_SAVE_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli-Responses-36-22'
 
 SINGLE_UNIT_FOLDER = os.path.join(DATA_FOLDER, 'data-single-unit')
 STIM_PARAMS_FOLDER = os.path.join(DATA_FOLDER, 'Stimuli-Params')
@@ -65,7 +65,7 @@ EXCLUDE_UNITS = ['Flag', 'MPW-Dendrite', 'SU-Small', 'SU-Positive']
 
 ######## B. Choosing stimuli  ########
 # Choose stimulus (ex. mb, mg_sq)
-STIMULUS_NAME = 'mg_sq'
+STIMULUS_NAME = 'mb' # mg_sq
 NUM_FRAMES = 192 if STIMULUS_NAME == 'mb' else 180
 
 # Define stimuli_params_key
@@ -85,10 +85,15 @@ mb_stimuli_params_keys = {
 }
 
 mg_stimuli_params_keys = {
+    '2022-12-20_15-08': '20221220/c11kmg_sq_params.npy',
+    '2022-12-21_13-09': '20221221/b11kmg_sq_params.npy',
     '2023-03-21_16-17': '20230321/a11hmg_sq_params.npy',
     '2023-03-22_12-22': '20230322/a11hmg_sq_params.npy',
     '2023-04-13_12-35': '20230413/a11hmg_sq_params.npy',
-    '2023-04-14_11-48': '20230414/b11gmg_sq_params.npy'
+    '2023-04-14_11-48': '20230414/b11gmg_sq_params.npy',
+    '2023-04-17_12-26': '20230417/b11gmg_sq_params.npy',
+    '2023-04-18_12-10': '20230418/b11gmg_sq_params.npy'
+    
 }
 
 ######## C. Defining helper method for modulation index based filtering ########
@@ -314,19 +319,19 @@ def calculate_firing_rate_mb(experiment_name, validation_plot=False):
         plt.show()
 
 experiment_names = [
-    # "2023-01-27_12-58-44_Complete_spiketime_Header_TTLs_withdrops_n_withGUIclassif.pkl",
     # "2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2022-12-21_13-09-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-01-27_12-58-44_Complete_spiketime_Header_TTLs_withdrops_n_withGUIclassif.pkl",
     # "2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     # "2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    # "2022-12-21_13-09-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     # "2023-02-23_08-57-20_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     # "2023-03-16_12-16-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-03-21_16-17-18_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-03-22_12-22-12_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-04-13_12-35-02_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-04-14_11-48-04_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-03-21_16-17-18_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-03-22_12-22-12_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-04-13_12-35-02_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-04-14_11-48-04_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     # "2023-04-17_12-26-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    # "2023-04-18_12-10-34_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    "2023-04-18_12-10-34_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
 ]
 
 

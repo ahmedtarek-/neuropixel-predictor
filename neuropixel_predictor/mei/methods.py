@@ -8,16 +8,15 @@ DEFAULT_DEVICE = "cuda" if torch.cuda.is_available() else "mps"
 class MEIConfig:
     """Configuration for MEI optimization."""
     lr: float = 0.05
-    steps: int = 300
+    steps: int = 200
     init_std: float = 0.1
     l2_lambda: float = 1e-3
     tv_lambda: float = 5e-4
-    blur_sigma_start: float = 5
-    blur_sigma_end: float = 0.5
+    blur_sigma_start: float = 6.0
+    blur_sigma_end: float = 1.0
     clip_min: float = -5.0
     clip_max: float = 5.0
     mode: str = "cei"   # "cei", "vei_plus", "vei_minus"
-
 
 def total_variation(x):
     """Total variation regularizer."""
@@ -112,9 +111,9 @@ class MEIMethod:
             loss.backward()
 
             # blur gradient before step
-            sigma = blur_schedule(step, steps, self.config.blur_sigma_start, self.config.blur_sigma_end)  # adjust
-            with torch.no_grad():
-                image.grad.data = blur_image(image.grad.data, sigma, device=image.device)
+            # sigma = blur_schedule(step, steps, self.config.blur_sigma_start, self.config.blur_sigma_end)  # adjust
+            # with torch.no_grad():
+            #     image.grad.data = blur_image(image.grad.data, sigma, device=image.device)
 
             optimizer.step()
 

@@ -51,10 +51,12 @@ TRAINING_DATA_DIR = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimu
 
 ######## B. Choosing stimuli  ########
 # Choose stimulus (ex. Sd36x22_l_3, Sl36x22_d_3, csd, Nat_Mov, Nat_Mov_sw, Nat_Mov_sc)
-stimulus_name = 'Sl36x22_d_3' # 'Nat_Mov'
-stimulus_file = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-36x22/sparse_noise_light_36_22.npy'
+stimulus_name = 'Nat_Mov_sc' # Sl36x22_d_3
+# stimulus_file = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-36x22/sparse_noise_light_36_22.npy'
+# stimulus_file = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-36x22/natural_movie_36_22.npy'
 # stimulus_file = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-36x22/natural_movie_swap_36_22.npy'
-# stimulus_file = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/sparse_noise_light_36_22.npy'
+stimulus_file = '/Users/tarek/Documents/UNI/Lab Rotations/Kremkow/Data/Stimuli/Psychopy-36x22/natural_movie_scrable_36_22.npy'
+
 
 
 ######## C. Defining helper method for modulation index based filtering ########
@@ -87,6 +89,7 @@ def calculate_firing_rate(experiment_name):
     exp_date = re.search(pattern, experiment_name).groups()[0]
     print("\n=====================")
     print("Processing Experiment -> exp_date: ", exp_date)
+    print("Current Stimulus -> ", stimulus_name)
 
     # Load pickle
     file_path = os.path.join(SINGLE_UNIT_FOLDER, experiment_name)
@@ -221,11 +224,11 @@ def calculate_firing_rate(experiment_name):
 
 # Choosing experiment name(s)
 experiment_names = [
-    # "2023-01-27_12-58-44_Complete_spiketime_Header_TTLs_withdrops_n_withGUIclassif.pkl",
     # "2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     # "2022-12-21_13-09-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-01-27_12-58-44_Complete_spiketime_Header_TTLs_withdrops_n_withGUIclassif.pkl",
+    # "2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     # "2023-02-23_08-57-20_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     # "2023-03-16_12-16-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     # "2023-03-21_16-17-18_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
@@ -233,7 +236,7 @@ experiment_names = [
     # "2023-04-13_12-35-02_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     # "2023-04-14_11-48-04_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     # "2023-04-17_12-26-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    # "2023-04-18_12-10-34_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    "2023-04-18_12-10-34_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl"
 ]
 
 for experiment_name in experiment_names:

@@ -79,7 +79,8 @@ processing with Sd36x22_l_3 having 4561 TTLs
 processing with mg_sq having 240 TTLs
 ```
 
-- We need these exact steps for each experiment (i.e twice in that case)
+We need these exact steps for each experiment (i.e twice in that case)
+
 1. Generate the desired stimuli sizes using psychopy (check scripts section)
 
 2. Calculate Firing Rate (edit script for each stimuli with correct name and paths)

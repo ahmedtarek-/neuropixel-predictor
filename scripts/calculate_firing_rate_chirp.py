@@ -234,9 +234,9 @@ def calculate_firing_rate_mb(experiment_name, validation_plot=False):
 
 experiment_names = [
     # "2023-01-27_12-58-44_Complete_spiketime_Header_TTLs_withdrops_n_withGUIclassif.pkl",
-    "2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    "2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2022-12-20_15-08-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-03-15_11-05-00_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    # "2023-03-15_15-23-14_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     # "2022-12-21_13-09-10_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     # "2023-02-23_08-57-20_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     # "2023-03-16_12-16-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
@@ -245,7 +245,7 @@ experiment_names = [
     # "2023-04-13_12-35-02_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     # "2023-04-14_11-48-04_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
     # "2023-04-17_12-26-07_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
-    # "2023-04-18_12-10-34_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
+    "2023-04-18_12-10-34_Complete_spiketime_Header_TTLs_withdrops_withGUIclassif.pkl",
 ]
 
 

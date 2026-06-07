@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 
 from .methods import MEIMethod, MEIConfig
 
-IMAGE_WIDTH = 64
-IMAGE_HEIGHT = 36
+IMAGE_WIDTH = 36
+IMAGE_HEIGHT = 22
 
 SAVE_DIR = 'meis'
 
@@ -62,9 +62,9 @@ def plot_mei(mei_tensor, neuron_idx, title="MEI", save_folder=None, ax=None):
         # plt.close(fig)
 
 
-def generate_meis(model, n_neurons_dict, steps=300):
+def generate_meis(model, n_neurons_dict, steps=300, shape=(IMAGE_WIDTH, IMAGE_HEIGHT)):
     device = torch.device("mps")
-    image_shape = (1, 1, IMAGE_WIDTH, IMAGE_HEIGHT)
+    image_shape = (1, 1, shape[0], shape[1])
     
     meis = dict([[k, []] for k in n_neurons_dict.keys()])
     total_meis = sum(n_neurons_dict.values())
@@ -90,13 +90,19 @@ def generate_meis(model, n_neurons_dict, steps=300):
 
     return meis
 
-def generate_and_save_meis(n_neurons_dict, steps=600, folder_suffix=None, cluster_ids=None, title_suffix=""):
+def generate_and_save_meis(n_neurons_dict,
+    steps=600,
+    folder_suffix=None,
+    cluster_ids=None,
+    title_suffix="",
+    shape=(IMAGE_WIDTH, IMAGE_HEIGHT)
+):
     date = datetime.now().strftime("%Y-%m-%d")
 
     sub_dir = f"{date}_({folder_suffix})" if folder_suffix else date
     os.makedirs(SAVE_DIR, exist_ok=True)
 
-    image_shape = (1, 1, IMAGE_WIDTH, IMAGE_HEIGHT)
+    image_shape = (1, 1, shape[0], shape[1])
     
     total_meis = sum(n_neurons_dict.values())
     current_mei = 0
