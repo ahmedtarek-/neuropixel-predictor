@@ -10,15 +10,16 @@ IMAGE_HEIGHT = 22
 
 SAVE_DIR = 'meis'
 
-def generate_mei(model, data_key, neuron_idx, image_shape,
-                 steps=300, mode="cei", device="mps"):
+
+def generate_mei(model, data_key, neuron_idx, image_shape, device,
+                 steps=300, mode="cei"):
     """
     High-level wrapper to generate a MEI.
     """
     config = MEIConfig(mode=mode)
     mei_method = MEIMethod(config)
 
-    model.to(device)
+    model.to(torch.device(device))
     model.eval()
 
     with torch.no_grad():
@@ -62,8 +63,7 @@ def plot_mei(mei_tensor, neuron_idx, title="MEI", save_folder=None, ax=None):
         # plt.close(fig)
 
 
-def generate_meis(model, n_neurons_dict, steps=300, shape=(IMAGE_WIDTH, IMAGE_HEIGHT)):
-    device = torch.device("mps")
+def generate_meis(model, n_neurons_dict, device, steps=300, shape=(IMAGE_WIDTH, IMAGE_HEIGHT)):
     image_shape = (1, 1, shape[0], shape[1])
     
     meis = dict([[k, []] for k in n_neurons_dict.keys()])
@@ -82,16 +82,18 @@ def generate_meis(model, n_neurons_dict, steps=300, shape=(IMAGE_WIDTH, IMAGE_HE
                 data_key,
                 neuron_idx,
                 image_shape,
+                device,
                 steps=steps,
                 mode='cei',
-                device=device
             )
             meis[data_key].append(mei)
 
     return meis
 
-def generate_and_save_meis(n_neurons_dict,
-    steps=600,
+def generate_and_save_meis(model,
+    n_neurons_dict,
+    device,
+    steps=600,  
     folder_suffix=None,
     cluster_ids=None,
     title_suffix="",
@@ -126,9 +128,9 @@ def generate_and_save_meis(n_neurons_dict,
                 data_key,
                 neuron_idx,
                 image_shape,
+                device,
                 steps=steps,
-                mode='cei',
-                device=device
+                mode='cei'
             )
             # Create figure and plot
             fig, ax = plt.subplots(figsize=(8, 6))
