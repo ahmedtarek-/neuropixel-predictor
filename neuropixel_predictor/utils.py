@@ -22,12 +22,12 @@ def generate_reconstructed_data(test_dataloaders, model):
     with torch.no_grad():
         for data_key in test_dataloaders.keys():
             for x, y, ids_batch in test_dataloaders[data_key]:
-                x, y = x.to(device), y.to(device)
+                x = x.to(device)
                 # 1.2 Calculate model prediction
                 yhat = model(x, data_key=data_key)
                 yhat = yhat[:, 0, :]
                 Y[data_key].append(y)
-                Yhat[data_key].append(torch.exp(yhat))
+                Yhat[data_key].append(torch.exp(yhat).cpu())
                 ids[data_key].append(ids_batch)
 
     # 2. Concatenate and Sort according to IDs.

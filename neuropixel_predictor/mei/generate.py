@@ -86,7 +86,7 @@ def generate_meis(model, n_neurons_dict, device, steps=300, shape=(IMAGE_WIDTH, 
                 steps=steps,
                 mode='cei',
             )
-            meis[data_key].append(mei)
+            meis[data_key].append(mei.cpu())
 
     return meis
 
